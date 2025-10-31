@@ -99,7 +99,7 @@ jobs:
           fetch-depth: 1
 
       - name: Run Issue Bot
-        uses: juulsn/todo-issue@v1.1.4
+        uses: juulsn/todo-issue@v1.1.5
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
