@@ -210,3 +210,9 @@ secure/
 # Backup files
 *.bak
 *.backup
+
+# Allow editor recommendations
+!.vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
+

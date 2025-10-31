@@ -217,35 +217,34 @@ shap_analytics/
 ### Setup Development Environment
 
 ```bash
-# Clone repository
-git clone https://github.com/diogoribeiro7/shap-analytics.git
-cd shap-analytics
+# Recommended one-liner
+make setup
 
-# Run setup script
-./setup.sh
+# Or run onboarding helper
+poetry run python scripts/onboard.py
 
-# Or manually:
+# Manual steps
 poetry install
 pre-commit install
+pre-commit install --hook-type commit-msg
 ```
+
+- Dev Containers: open the repository in VS Code and select **Reopen in Container** to use the provided `.devcontainer` setup.
+- Local IDEs: recommended settings for VS Code are stored under `.vscode/` and will enable Black+Ruff formatting by default.
 
 ### Quality Checks
 
 ```bash
-# Type checking
-poetry run mypy --strict src/
-
-# Linting
-poetry run ruff check src/
-
-# Code formatting
-poetry run ruff format src/
-
-# Run all pre-commit hooks
+# Fast lint + typecheck
+make lint typecheck
+# Run tests with coverage gate
+make coverage
+# Security audit
+make security
+# Full pre-commit suite
 poetry run pre-commit run --all-files
 ```
 
-### Running the Application
 
 ```bash
 # Activate virtual environment
