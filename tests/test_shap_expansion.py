@@ -366,9 +366,9 @@ class TestDataQuality:
     def test_data_quality_with_outliers(self, temp_dir):
         """Test data quality detection with outliers."""
         # Using 3-sigma rule for outlier detection: |x - mean| > 3 * std
-        # Need extreme outlier to exceed 3 standard deviations
+        # Need very extreme outlier to exceed 3 standard deviations (uses sample std)
         df = pd.DataFrame({
-            'a': [1, 2, 3, 4, 5, 6, 7, 8, 9, 1000],  # 1000 is extreme outlier
+            'a': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10000],  # 10000 is very extreme outlier
             'b': [5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
         })
 
@@ -376,7 +376,7 @@ class TestDataQuality:
         result = automate_data_quality_checks(df, str(output_path))
 
         report = json.loads(result.read_text())
-        # With extreme outlier (1000), should detect at least 1 in column 'a'
+        # With very extreme outlier (10000), should detect at least 1 in column 'a'
         assert report["outliers"]["a"] >= 1  # At least one outlier
 
 
