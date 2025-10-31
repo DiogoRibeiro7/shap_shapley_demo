@@ -106,6 +106,76 @@ def sample_shap_dataframe() -> pd.DataFrame:
     )
 
 
+@pytest.fixture
+def trained_rf_model(sample_classification_data) -> RandomForestClassifier:
+    """Create and train a RandomForest model (alias for trained_model)."""
+    X, y = sample_classification_data
+    model = RandomForestClassifier(n_estimators=10, max_depth=3, random_state=42)
+    model.fit(X, y)
+    return model
+
+
+@pytest.fixture
+def small_trained_model() -> RandomForestClassifier:
+    """Create and train a small RandomForest model with minimal samples."""
+    X, y = make_classification(
+        n_samples=30,
+        n_features=5,
+        n_informative=3,
+        n_redundant=1,
+        n_classes=2,
+        random_state=42
+    )
+    model = RandomForestClassifier(n_estimators=5, max_depth=2, random_state=42)
+    model.fit(X, y)
+    return model
+
+
+@pytest.fixture
+def small_dataset() -> tuple[pd.DataFrame, pd.Series]:
+    """Create a small classification dataset for testing."""
+    X, y = make_classification(
+        n_samples=30,
+        n_features=5,
+        n_informative=3,
+        n_redundant=1,
+        n_classes=2,
+        random_state=42
+    )
+    X_df = pd.DataFrame(X, columns=[f"feature_{i}" for i in range(5)])
+    y_series = pd.Series(y, name="target")
+    return X_df, y_series
+
+
+@pytest.fixture
+def train_test_split_data(sample_classification_data) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Create train/test split from classification data."""
+    X, _ = sample_classification_data
+    # Simple 80/20 split
+    split_idx = int(len(X) * 0.8)
+    X_train = X[:split_idx]
+    X_test = X[split_idx:]
+    return X_train, X_test
+
+
+@pytest.fixture
+def sample_config() -> dict[str, object]:
+    """Create a sample configuration dictionary."""
+    return {
+        "MODEL_PATH": "model.joblib",
+        "DRIFT_THRESHOLD": 0.2,
+        "CACHE_TTL_HOURS": 24,
+        "LOG_LEVEL": "INFO",
+    }
+
+
+@pytest.fixture
+def mock_shap_values() -> np.ndarray:
+    """Create mock SHAP values array for testing."""
+    np.random.seed(42)
+    return np.random.randn(50, 5) * 0.5
+
+
 @pytest.fixture(autouse=True)
 def cleanup_test_artifacts():
     """Cleanup test artifacts after each test."""
