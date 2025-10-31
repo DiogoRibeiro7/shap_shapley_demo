@@ -1,4 +1,4 @@
-name: Create issues from TODOs (Python)
+name: Create issues from TODOs
 
 on:
   workflow_dispatch:
@@ -8,124 +8,83 @@ on:
         type: boolean
         required: false
         default: false
-  schedule:
-    - cron: "17 6 * * 1"  # Mondays 06:17 UTC — dry-run only
   push:
-    branches: [ develop ]
+    # Use your default branch. Avoid multiple branches to prevent self-referencing on merges (per action docs).
+    branches: [ master ]
+    # Optional: run only when source files change, not docs/CI files.
     paths:
+      - '**/*.ts'
+      - '**/*.tsx'
+      - '**/*.js'
+      - '**/*.jsx'
       - '**/*.py'
-      - '**/*.pyi'
-      - '**/*.pyx'
-      - '**/*.pxd'
-      - '**/*.ipynb'
-      - 'pyproject.toml'
-      - 'setup.cfg'
-      - 'setup.py'
+      - '**/*.rs'
+      - '**/*.go'
+      - '**/*.java'
+      - '**/*.cs'
+      - '**/*.rb'
+      - '**/*.php'
+      - '**/*.sh'
       - '!**/*.md'
       - '!.github/**'
-  pull_request:
-    branches: [ main ]
-    paths:
-      - '**/*.py'
-      - '**/*.ipynb'
-      - 'pyproject.toml'
-      - 'setup.cfg'
-      - 'setup.py'
 
 permissions:
   contents: read
   issues: write
-  pull-requests: read
+  repository-projects: read
 
 concurrency:
-  group: todo-issue-${{ github.workflow }}-${{ github.ref }}
+  group: todo-issue-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  # Dry-run scanning for PRs and schedule (no issues created)
-  scan-dry-run:
-    name: TODO scan (dry-run)
-    runs-on: ubuntu-latest
-    if: >
-      (github.event_name == 'pull_request' || github.event_name == 'schedule') &&
-      github.actor != 'dependabot[bot]' &&
-      github.actor != 'github-actions[bot]'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 1
-
-      - name: Grep TODO-like tokens
-        run: |
-          set -euo pipefail
-          grep -RInE --line-number --binary-files=without-match \
-            --exclude-dir={.git,.github,.venv,venv,env,__pycache__,.pytest_cache,.mypy_cache,.ruff_cache,.nox,.tox,build,dist,site,htmlcov,coverage,node_modules,docs/_build} \
-            -E '(^|\s)(TODO|FIXME|BUG|HACK|NOTE)\b' \
-            . | tee todo_matches.txt || true
-          echo "### TODO scan (dry-run)" >> $GITHUB_STEP_SUMMARY
-          if [ -s todo_matches.txt ]; then
-            echo "$(wc -l < todo_matches.txt) matches found." >> $GITHUB_STEP_SUMMARY
-            echo "\n\`\`\`\n$(head -n 50 todo_matches.txt)\n\`\`\`\n" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "No matches." >> $GITHUB_STEP_SUMMARY
-          fi
-
-      - name: Upload scan artifact
-        uses: actions/upload-artifact@v5
-        with:
-          name: todo-scan
-          path: todo_matches.txt
-          if-no-files-found: ignore
-
-  # Actual issue creation — ONLY on push or manual with importAll=true
   todos:
     name: Convert TODOs to issues
     runs-on: ubuntu-latest
-    needs: []
     timeout-minutes: 10
-    if: >
-      !github.event.repository.fork &&
-      github.actor != 'dependabot[bot]' &&
-      github.actor != 'github-actions[bot]' &&
-      (
-        github.event_name == 'push' ||
-        (github.event_name == 'workflow_dispatch' && inputs.importAll == true)
-      )
+    if: ${{ !github.event.repository.fork }}  # don't run on forks
+
     steps:
+      # Pin to a release or a commit SHA for supply-chain safety.
+      # v5 example (or replace with a specific commit SHA):
       - name: Checkout
         uses: actions/checkout@v5
         with:
+          # If you plan to run "import all" against history, set fetch-depth: 0
           fetch-depth: 1
 
-      - name: Run Issue Bot
-        uses: juulsn/todo-issue@v1.1.5
+      - name: Who am I with this token?
+        run: |
+          set -euo pipefail
+          who=$(curl -s -H "authorization: Bearer ${{ env.GITHUB_TOKEN }}" https://api.github.com/user | jq -r '.login,.type')
+          echo "Actor via token: $who"
         env:
           GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Run Issue Bot
+        # Pin to the latest release tag instead of @main
+        uses: juulsn/todo-issue@v1.1.4
+        env:
+          # Use the built-in token; no PAT required.
+          # Either works; I prefer github.token so you don't need a secret entry.
+          GITHUB_TOKEN: ${{ github.token }}
         with:
+          # Keep the regex tight; add common big folders/build artifacts to skip.
           excludePattern: >-
             ^(
-              (\.git/|\.github/)|            # VCS/CI
-              (\.venv/|venv/|env/)|          # venvs
-              (__pycache__/)|                # py caches
-              (\.pytest_cache/)|             # pytest cache
-              (\.mypy_cache/)|               # mypy cache
-              (\.ruff_cache/)|               # ruff cache
-              (\.nox/|\.tox/)|               # nox/tox
-              (build/|dist/|site/|htmlcov/|coverage/)|  # builds & reports
-              (\.eggs/|\.idea/|\.vscode/)|   # tooling
-              (node_modules/)|               # just in case
-              (docs/_build/)                 # sphinx build
+              node_modules/|
+              dist/|
+              build/|
+              .next/|
+              out/|
+              coverage/|
+              .venv/|
+              venv/|
+              target/|
+              vendor/
             )
-          keywords: "TODO,FIXME,BUG,HACK,NOTE"
-          bodyKeywords: "ASSIGNEE:|LABELS:|PRIORITY:"
+          # Optional tweaks (uncomment if you want them)
+          keywords: "TODO"
           label: "todo"
           autoAssign: false
           caseSensitive: false
-          titleSimilarity: 0.7     # dedupe sensitivity (0..1)
-          reopenClosed: false
-
-      - name: Summary
-        run: |
-          echo "### TODO issue creation" >> $GITHUB_STEP_SUMMARY
-          echo "Scan completed. See Issues for newly created/updated items." >> $GITHUB_STEP_SUMMARY
