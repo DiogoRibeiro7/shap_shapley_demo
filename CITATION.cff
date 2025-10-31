@@ -1,0 +1,38 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "SHAP Analytics: Professional SHAP Value Computation and Analysis"
+version: 0.1.0
+date-released: 2025-10-31
+url: "https://github.com/yourusername/shap-analytics"
+repository-code: "https://github.com/yourusername/shap-analytics"
+license: MIT
+authors:
+  - family-names: "Analytics"
+    given-names: "SHAP"
+    email: shap-analytics@example.com
+    orcid: "https://orcid.org/0000-0000-0000-0000"
+    affiliation: "SHAP Analytics Contributors"
+keywords:
+  - SHAP
+  - machine learning
+  - explainability
+  - interpretability
+  - XAI
+  - scikit-learn
+  - model explanation
+abstract: >
+  SHAP Analytics is a comprehensive Python library for computing,
+  analyzing, visualizing, and deploying SHAP (SHapley Additive
+  exPlanations) values in production machine learning systems.
+  It provides robust tools for feature importance analysis,
+  drift monitoring, background sample validation, and automated
+  explanation generation with enterprise-grade quality controls.
+preferred-citation:
+  type: software
+  title: "SHAP Analytics: Professional SHAP Value Computation and Analysis"
+  authors:
+    - family-names: "Analytics"
+      given-names: "SHAP"
+  year: 2025
+  version: 0.1.0

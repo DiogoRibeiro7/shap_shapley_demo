@@ -1,0 +1,125 @@
+site_name: SHAP Analytics Documentation
+site_description: Professional SHAP value computation, analysis, and deployment toolkit
+site_author: SHAP Analytics Contributors
+site_url: https://yourusername.github.io/shap-analytics
+repo_url: https://github.com/yourusername/shap-analytics
+repo_name: yourusername/shap-analytics
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  font:
+    text: Roboto
+    code: Roboto Mono
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_source: true
+            show_root_heading: true
+            show_root_full_path: false
+            members_order: source
+            heading_level: 2
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation: getting_started/installation.md
+      - Quick Start: getting_started/quickstart.md
+      - Usage Examples: usage.md
+  - Architecture:
+      - Overview: architecture.md
+      - Design Principles: architecture/design_principles.md
+      - Module Structure: architecture/modules.md
+  - API Reference:
+      - Core API: api_reference.md
+      - SHAP Explain: api/shap_explain.md
+      - SHAP Expansion: api/shap_expansion.md
+      - SHAP Future: api/shap_future.md
+      - Utilities: api/utils.md
+  - Guides:
+      - Computing SHAP Values: guides/computing_shap.md
+      - Drift Monitoring: guides/drift_monitoring.md
+      - API Deployment: guides/api_deployment.md
+      - Docker Deployment: guides/docker.md
+  - Development:
+      - Contributing: CONTRIBUTING.md
+      - Code of Conduct: CODE_OF_CONDUCT.md
+      - Changelog: CHANGELOG.md
+  - Future Work: future_work.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/yourusername/shap-analytics
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/shap-analytics/
+
+copyright: Copyright &copy; 2025 SHAP Analytics Contributors

@@ -259,7 +259,7 @@ def improve_error_handling(log_file: str = "logs/shap_app.log") -> logging.Logge
     logger.info(f"Configured structured logging at {log_file}")
 
     def safe_api_call(
-        func: Callable,
+        func: Callable[..., Any],
         *args: Any,
         retries: int = 3,
         delay: float = 2.0,
@@ -277,7 +277,7 @@ def improve_error_handling(log_file: str = "logs/shap_app.log") -> logging.Logge
         return None
 
     # Attach helper method to logger
-    logger_app.safe_api_call = safe_api_call
+    logger_app.safe_api_call = safe_api_call  # type: ignore[attr-defined]
 
     logger.info("Structured logging with retry support configured")
     print(f"✅ JSON logger configured at {log_file}")
@@ -385,7 +385,7 @@ def test_basic_shap_computation():
 
 def optimize_performance(
     X: pd.DataFrame,
-    shap_func: Callable,
+    shap_func: Callable[..., Any],
     n_jobs: int = 4,
 ) -> float:
     """

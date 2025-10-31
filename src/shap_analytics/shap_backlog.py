@@ -37,12 +37,13 @@ import hashlib
 import tracemalloc
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import click
 import matplotlib.pyplot as plt
 import mlflow
 import numpy as np
+from numpy.typing import NDArray
 import pandas as pd
 import yaml
 
@@ -250,13 +251,13 @@ def implement_model_drift_dashboard(
         m = 0.5 * (p + q)
         p = np.clip(p, 1e-12, None)
         q = np.clip(q, 1e-12, None)
-        return 0.5 * (np.sum(p * np.log(p / m)) + np.sum(q * np.log(q / m)))
+        return cast(float, 0.5 * (np.sum(p * np.log(p / m)) + np.sum(q * np.log(q / m))))
 
     drift = []
     for col in shap_new.columns:
         p = shap_old[col].value_counts(normalize=True).reindex(shap_new[col].unique(), fill_value=0)
         q = shap_new[col].value_counts(normalize=True).reindex(shap_new[col].unique(), fill_value=0)
-        drift.append(js_divergence(p.values, q.values))
+        drift.append(js_divergence(cast(np.ndarray, p.values), cast(np.ndarray, q.values)))
 
     plt.figure(figsize=(8, 4))
     plt.bar(shap_new.columns, drift, color="salmon")
@@ -624,19 +625,19 @@ def add_cli_interface() -> None:
     logger.info("Creating CLI interface")
 
     @click.group()
-    def cli():
+    def cli() -> None:
         """SHAP Analytics CLI"""
         pass
 
     @cli.command()
     @click.option("--task", type=click.Choice(["compute", "export", "report"]), required=True)
-    def run(task: str):
+    def run(task: str) -> None:
         """Run specific SHAP tasks."""
         click.echo(f"Running task: {task}")
         logger.info(f"CLI task executed: {task}")
 
     @cli.command()
-    def info():
+    def info() -> None:
         """Display CLI information."""
         click.echo("SHAP CLI v1.0 — supports compute, export, report")
 
@@ -674,7 +675,7 @@ def research_interaction_effects(
     corr_np: NDArray[np.float64] = corr_df.to_numpy(dtype=np.float64)
 
     # Matplotlib wants a real Sequence[str], not a pandas Index
-    labels: List[str] = [str(c) for c in corr_df.columns]
+    labels: list[str] = [str(c) for c in corr_df.columns]
 
     plt.figure(figsize=(6, 5))
     plt.imshow(corr_np, cmap="coolwarm", interpolation="nearest")

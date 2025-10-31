@@ -10,7 +10,7 @@ import json
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import joblib
 import numpy as np
@@ -94,7 +94,7 @@ def load_json(input_path: str | Path) -> dict[str, Any]:
     path = Path(input_path)
     if not path.exists():
         raise FileNotFoundError(f"JSON file not found: {input_path}")
-    return json.loads(path.read_text(encoding="utf-8"))
+    return cast(dict[str, Any], json.loads(path.read_text(encoding="utf-8")))
 
 
 def compute_jensen_shannon_divergence(
@@ -248,13 +248,13 @@ def compute_mean_abs_shap(
     Returns:
         Array of mean absolute SHAP values.
     """
-    values = shap_values.values if hasattr(shap_values, "values") else shap_values  # type: ignore[attr-defined]
+    values = shap_values.values if hasattr(shap_values, "values") else shap_values
 
     # Handle multi-output case
     if values.ndim == 3:
         values = values[..., 1]
 
-    return np.abs(values).mean(axis=axis)
+    return cast(np.ndarray, np.abs(values).mean(axis=axis))
 
 
 def setup_logger(

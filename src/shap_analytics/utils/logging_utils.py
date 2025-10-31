@@ -113,6 +113,7 @@ def setup_structured_logger(
     handler.setLevel(level)
 
     # Set formatter
+    formatter: logging.Formatter
     if enable_json:
         formatter = LambdaJsonFormatter()
     else:

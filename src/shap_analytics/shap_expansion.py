@@ -14,7 +14,7 @@ This module extends SHAP functionality with:
 
 import asyncio
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 import pandas as pd
@@ -162,11 +162,11 @@ def integrate_model_registry(
     """
     logger.info(f"Registering model with metadata: {metadata}")
 
-    registry = []
+    registry: list[dict[str, Any]] = []
     registry_path_obj = Path(registry_path)
 
     if registry_path_obj.exists():
-        registry = load_json(registry_path)
+        registry = cast(list[dict[str, Any]], load_json(registry_path))
         logger.debug(f"Loaded existing registry with {len(registry)} entries")
 
     entry = {
@@ -248,7 +248,7 @@ def benchmark_model_versions(
         print("⚠️ No registry found, skipping benchmark.")
         return []
 
-    registry = load_json(registry_path)
+    registry = cast(list[dict[str, Any]], load_json(registry_path))
     versions = [
         r["metadata"]["version"]
         for r in registry

@@ -1,0 +1,59 @@
+# Pre-commit hooks for code quality and consistency
+# See https://pre-commit.com for more information
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+        name: Trim trailing whitespace
+      - id: end-of-file-fixer
+        name: Fix end of files
+      - id: check-yaml
+        name: Check YAML syntax
+      - id: check-toml
+        name: Check TOML syntax
+      - id: check-json
+        name: Check JSON syntax
+      - id: check-added-large-files
+        name: Check for large files
+        args: ['--maxkb=1000']
+      - id: check-merge-conflict
+        name: Check for merge conflicts
+      - id: check-ast
+        name: Check Python AST
+      - id: debug-statements
+        name: Check for debug statements
+      - id: mixed-line-ending
+        name: Check line endings
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.3.0
+    hooks:
+      - id: ruff
+        name: Run Ruff linter
+        args: [--fix, --exit-non-zero-on-fix]
+      - id: ruff-format
+        name: Run Ruff formatter
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.8.0
+    hooks:
+      - id: mypy
+        name: Run MyPy type checker
+        additional_dependencies:
+          - types-requests
+          - types-redis
+        args: [--strict, --ignore-missing-imports]
+        files: ^src/
+
+  - repo: local
+    hooks:
+      - id: pytest-check
+        name: Run pytest with minimal config
+        entry: poetry run pytest
+        language: system
+        pass_filenames: false
+        always_run: true
+        args: [--maxfail=1, --disable-warnings, -q]
+        stages: [commit]

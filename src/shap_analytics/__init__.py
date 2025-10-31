@@ -26,11 +26,6 @@ __version__ = "0.1.0"
 __author__ = "SHAP Analytics Contributors"
 __license__ = "MIT"
 
-from .shap_expansion import (
-    SHAPRegistry,
-    create_interactive_dashboard,
-    serve_shap_api,
-)
 from .shap_explain import (
     compute_shap_values,
     monitor_feature_drift,
@@ -50,13 +45,11 @@ from .utils.common import (
 )
 
 __all__ = [
-    "SHAPRegistry",
     "__author__",
     "__license__",
     "__version__",
     "compute_mean_abs_shap",
     "compute_shap_values",
-    "create_interactive_dashboard",
     "ensure_directory",
     "get_timestamp",
     "load_json",
@@ -64,7 +57,6 @@ __all__ = [
     "monitor_feature_drift",
     "save_json",
     "serialize_model",
-    "serve_shap_api",
     "setup_logger",
     "shap_to_dataframe",
     "validate_background_sample",
