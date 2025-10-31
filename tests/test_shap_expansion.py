@@ -11,6 +11,7 @@ Tests cover:
 """
 
 import json
+
 from pathlib import Path
 
 import numpy as np
@@ -364,10 +365,10 @@ class TestDataQuality:
 
     def test_data_quality_with_outliers(self, temp_dir):
         """Test data quality detection with outliers."""
-        # Need more samples for outlier detection to work reliably
-        # Using IQR method: Q1 - 1.5*IQR and Q3 + 1.5*IQR
+        # Using 3-sigma rule for outlier detection: |x - mean| > 3 * std
+        # Need extreme outlier to exceed 3 standard deviations
         df = pd.DataFrame({
-            'a': [1, 2, 3, 4, 5, 6, 7, 8, 9, 100],  # 100 is clear outlier
+            'a': [1, 2, 3, 4, 5, 6, 7, 8, 9, 1000],  # 1000 is extreme outlier
             'b': [5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
         })
 
@@ -375,7 +376,7 @@ class TestDataQuality:
         result = automate_data_quality_checks(df, str(output_path))
 
         report = json.loads(result.read_text())
-        # With 10 samples and 100 as clear outlier, should detect at least 1
+        # With extreme outlier (1000), should detect at least 1 in column 'a'
         assert report["outliers"]["a"] >= 1  # At least one outlier
 
 

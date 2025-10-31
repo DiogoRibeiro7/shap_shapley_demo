@@ -3,6 +3,7 @@ Pytest configuration and shared fixtures for SHAP tests.
 """
 
 import tempfile
+
 from collections.abc import Generator
 from pathlib import Path
 
@@ -10,6 +11,7 @@ import numpy as np
 import pandas as pd
 import pytest
 import shap
+
 from sklearn.datasets import make_classification
 from sklearn.ensemble import RandomForestClassifier
 
@@ -135,7 +137,7 @@ def small_trained_model() -> RandomForestClassifier:
 def small_dataset() -> tuple[pd.DataFrame, pd.Series]:
     """Create a small classification dataset for testing."""
     X, y = make_classification(
-        n_samples=30,
+        n_samples=50,  # Increased from 30 to allow for train/test splits
         n_features=5,
         n_informative=3,
         n_redundant=1,
@@ -148,14 +150,18 @@ def small_dataset() -> tuple[pd.DataFrame, pd.Series]:
 
 
 @pytest.fixture
-def train_test_split_data(sample_classification_data) -> tuple[pd.DataFrame, pd.DataFrame]:
+def train_test_split_data(
+    sample_classification_data,
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
     """Create train/test split from classification data."""
-    X, _ = sample_classification_data
+    X, y = sample_classification_data
     # Simple 80/20 split
     split_idx = int(len(X) * 0.8)
-    X_train = X[:split_idx]
-    X_test = X[split_idx:]
-    return X_train, X_test
+    X_train = X[:split_idx].reset_index(drop=True)
+    X_test = X[split_idx:].reset_index(drop=True)
+    y_train = y[:split_idx].reset_index(drop=True)
+    y_test = y[split_idx:].reset_index(drop=True)
+    return X_train, X_test, y_train, y_test
 
 
 @pytest.fixture
