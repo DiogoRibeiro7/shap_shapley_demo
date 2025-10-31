@@ -1,0 +1,72 @@
+name: Create issues from TODOs (Python)
+
+on:
+  workflow_dispatch:
+    inputs:
+      importAll:
+        description: Import ALL TODOs from the checked-out ref (use with care)
+        type: boolean
+        required: false
+        default: false
+  push:
+    # Use your default branch; avoids self-referencing on merges.
+    branches: [ develop ]
+    # Only scan Python-related sources.
+    paths:
+      - '**/*.py'
+      - '**/*.pyi'
+      - '**/*.pyx'
+      - '**/*.pxd'
+      - '**/*.ipynb'
+      - 'pyproject.toml'
+      - 'setup.cfg'
+      - 'setup.py'
+      - '!**/*.md'
+      - '!.github/**'
+
+permissions:
+  contents: read
+  issues: write
+  repository-projects: read
+
+concurrency:
+  group: todo-issue-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  todos:
+    name: Convert TODOs to issues
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: ${{ !github.event.repository.fork }}  # don't run on forks
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Run Issue Bot
+        uses: juulsn/todo-issue@v1.1.4
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          # Ignore common Python build artifacts, caches, and virtual envs.
+          excludePattern: >-
+            ^(
+              (\.git/|\.github/)|      # VCS/CI
+              (\.venv/|venv/|env/)|    # virtual envs
+              (__pycache__/)|          # py caches
+              (\.pytest_cache/)|       # pytest cache
+              (\.mypy_cache/)|         # mypy cache
+              (\.ruff_cache/)|         # ruff cache
+              (\.nox/|\.tox/)|         # nox/tox
+              (build/|dist/|site/|htmlcov/|coverage/)|  # builds & reports
+              (\.eggs/|\.idea/|\.vscode/)|  # tooling
+              (node_modules/)          # just in case
+            )
+          # Catch common tags engineers use in Python code & notebooks.
+          keywords: "TODO,FIXME,BUG,HACK,NOTE"
+          label: "todo"
+          autoAssign: false
+          caseSensitive: false
