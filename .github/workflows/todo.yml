@@ -13,7 +13,7 @@ on:
         type: choice
         options: [bot, user]
         required: false
-        default: bot
+        default: user
   push:
     # Use your real default branch here (master/main)
     branches: [ develop ]
