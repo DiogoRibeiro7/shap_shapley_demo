@@ -67,10 +67,27 @@ class LambdaJsonFormatter(logging.Formatter):
         # Add any custom fields from extra parameter
         for key, value in record.__dict__.items():
             if key not in [
-                "name", "msg", "args", "created", "filename", "funcName",
-                "levelname", "levelno", "lineno", "module", "msecs",
-                "message", "pathname", "process", "processName", "relativeCreated",
-                "thread", "threadName", "exc_info", "exc_text", "stack_info",
+                "name",
+                "msg",
+                "args",
+                "created",
+                "filename",
+                "funcName",
+                "levelname",
+                "levelno",
+                "lineno",
+                "module",
+                "msecs",
+                "message",
+                "pathname",
+                "process",
+                "processName",
+                "relativeCreated",
+                "thread",
+                "threadName",
+                "exc_info",
+                "exc_text",
+                "stack_info",
                 "context",
             ]:
                 try:
@@ -118,9 +135,7 @@ def setup_structured_logger(
     if enable_json:
         formatter = LambdaJsonFormatter()
     else:
-        formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        )
+        formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
     handler.setFormatter(formatter)
     logger.addHandler(handler)
@@ -199,12 +214,14 @@ class PerformanceLogger:
     def __enter__(self) -> "PerformanceLogger":
         """Start timing."""
         import time
+
         self.start_time = time.perf_counter()
         return self
 
     def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         """Stop timing and log performance."""
         import time
+
         if self.start_time is not None:
             duration_ms = (time.perf_counter() - self.start_time) * 1000
             log_performance(self.logger, self.operation, duration_ms, **self.extra)

@@ -59,9 +59,7 @@ def main() -> None:
     logger.info(f"Loaded dataset: {X.shape[0]} samples, {X.shape[1]} features")
 
     # Split
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42
-    )
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Train model
     model = RandomForestClassifier(n_estimators=100, max_depth=5, random_state=42)
@@ -80,7 +78,7 @@ def main() -> None:
     # Explain single prediction
     i = 0
     shap_values_class1 = shap_values[..., 1]
-    proba = model.predict_proba(X_test.iloc[i:i+1])[0, 1]
+    proba = model.predict_proba(X_test.iloc[i : i + 1])[0, 1]
     logger.info(f"Sample {i} predicted probability: {proba:.3f}")
     print(f"Predicted probability for malignant: {proba:.3f}")
 
@@ -127,9 +125,7 @@ def compute_shap_values(
 
     try:
         explainer = shap.TreeExplainer(
-            model,
-            data=background,
-            feature_perturbation="interventional"
+            model, data=background, feature_perturbation="interventional"
         )
         shap_values = explainer(X_test)
     except Exception as e:
@@ -142,7 +138,7 @@ def compute_shap_values(
     print("Expected value (base prediction):", expected_value)
 
     # Log mean predicted probability
-    if hasattr(model, 'predict_proba'):
+    if hasattr(model, "predict_proba"):
         mean_prob = model.predict_proba(X_train)[:, 1].mean()
         logger.info(f"Mean predicted probability (class 1): {mean_prob:.3f}")
         print("Mean predicted probability for malignant:", mean_prob)
@@ -226,11 +222,7 @@ def monitor_feature_drift(
 
     drift_scores = {}
     for col in X_train.columns:
-        drift_score = compute_jensen_shannon_divergence(
-            X_train[col],
-            X_new[col],
-            bins=bins
-        )
+        drift_score = compute_jensen_shannon_divergence(X_train[col], X_new[col], bins=bins)
         drift_scores[col] = drift_score
 
         if drift_score > threshold:
@@ -279,8 +271,8 @@ def verify_shap_reconstruction(
 
     try:
         # Get model prediction
-        if hasattr(model, 'predict_proba'):
-            model_proba = model.predict_proba(X.iloc[sample_index:sample_index+1])[0, 1]
+        if hasattr(model, "predict_proba"):
+            model_proba = model.predict_proba(X.iloc[sample_index : sample_index + 1])[0, 1]
         else:
             raise ValueError("Model does not support predict_proba")
 
@@ -301,9 +293,7 @@ def verify_shap_reconstruction(
         print(f"Reconstructed probability: {shap_proba:.6f}")
 
         if error > tolerance:
-            logger.warning(
-                f"SHAP reconstruction error {error:.6e} exceeds tolerance {tolerance}"
-            )
+            logger.warning(f"SHAP reconstruction error {error:.6e} exceeds tolerance {tolerance}")
             return False
         else:
             logger.info("SHAP reconstruction verified successfully")

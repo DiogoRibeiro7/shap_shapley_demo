@@ -6,7 +6,8 @@
       "Bash(timeout 30 poetry run python:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(poetry run ruff:*)"
     ],
     "deny": [],
     "ask": []

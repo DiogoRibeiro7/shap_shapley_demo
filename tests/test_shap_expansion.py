@@ -58,11 +58,9 @@ class TestPreprocessing:
 
     def test_preprocess_handles_missing_values(self):
         """Test preprocessing handles missing values correctly."""
-        df = pd.DataFrame({
-            'a': [1, 2, np.nan, 4],
-            'b': [5, np.nan, 7, 8],
-            'c': ['x', 'y', 'x', None]
-        })
+        df = pd.DataFrame(
+            {"a": [1, 2, np.nan, 4], "b": [5, np.nan, 7, 8], "c": ["x", "y", "x", None]}
+        )
 
         result = preprocess_data_pipeline(df)
 
@@ -70,7 +68,7 @@ class TestPreprocessing:
         assert not result.isna().any().any()
 
         # Check numeric columns are normalized
-        assert result[['a', 'b']].shape == (4, 2)
+        assert result[["a", "b"]].shape == (4, 2)
 
     def test_preprocess_empty_dataframe(self):
         """Test preprocessing with empty DataFrame."""
@@ -89,11 +87,7 @@ class TestVisualization:
         X, _ = sample_classification_data
         output_path = temp_dir / "dashboard.html"
 
-        result = add_explanation_dashboard(
-            shap_values_explanation,
-            X[:50],
-            str(output_path)
-        )
+        result = add_explanation_dashboard(shap_values_explanation, X[:50], str(output_path))
 
         assert result.exists()
         assert result.suffix == ".html"
@@ -114,14 +108,10 @@ class TestVisualization:
         single_shap = shap.Explanation(
             values=shap_values_explanation.values[:1],
             base_values=shap_values_explanation.base_values[:1],
-            data=shap_values_explanation.data[:1]
+            data=shap_values_explanation.data[:1],
         )
 
-        result = add_explanation_dashboard(
-            single_shap,
-            X[:1],
-            str(output_path)
-        )
+        result = add_explanation_dashboard(single_shap, X[:1], str(output_path))
 
         assert result.exists()
 
@@ -129,22 +119,12 @@ class TestVisualization:
 class TestModelRegistry:
     """Test model registry functions."""
 
-    def test_integrate_model_registry_creates_entry(
-        self, trained_model, temp_dir
-    ):
+    def test_integrate_model_registry_creates_entry(self, trained_model, temp_dir):
         """Test model registry creates entry and saves model."""
         registry_path = temp_dir / "registry.json"
-        metadata = {
-            "version": "1.0.0",
-            "description": "Test model",
-            "accuracy": 0.95
-        }
+        metadata = {"version": "1.0.0", "description": "Test model", "accuracy": 0.95}
 
-        integrate_model_registry(
-            trained_model,
-            metadata,
-            str(registry_path)
-        )
+        integrate_model_registry(trained_model, metadata, str(registry_path))
 
         # Check registry file exists
         assert registry_path.exists()
@@ -165,18 +145,10 @@ class TestModelRegistry:
         registry_path = temp_dir / "registry.json"
 
         # Add first entry
-        integrate_model_registry(
-            trained_model,
-            {"version": "1.0.0"},
-            str(registry_path)
-        )
+        integrate_model_registry(trained_model, {"version": "1.0.0"}, str(registry_path))
 
         # Add second entry
-        integrate_model_registry(
-            trained_model,
-            {"version": "1.0.1"},
-            str(registry_path)
-        )
+        integrate_model_registry(trained_model, {"version": "1.0.1"}, str(registry_path))
 
         registry = json.loads(registry_path.read_text())
         assert len(registry) == 2
@@ -211,11 +183,7 @@ class TestDriftDetection:
     def test_design_drift_alerts_no_drift(self, sample_dataframe):
         """Test drift detection when no drift exists."""
         # Use same data as reference and new
-        drift_scores = design_drift_alerts(
-            sample_dataframe,
-            sample_dataframe,
-            threshold=0.2
-        )
+        drift_scores = design_drift_alerts(sample_dataframe, sample_dataframe, threshold=0.2)
 
         assert isinstance(drift_scores, dict)
         assert len(drift_scores) == len(sample_dataframe.columns)
@@ -226,22 +194,15 @@ class TestDriftDetection:
     def test_design_drift_alerts_with_drift(self):
         """Test drift detection when drift exists."""
         np.random.seed(42)
-        reference = pd.DataFrame(
-            np.random.randn(100, 3),
-            columns=['a', 'b', 'c']
-        )
+        reference = pd.DataFrame(np.random.randn(100, 3), columns=["a", "b", "c"])
 
         # Create drifted data (shifted mean)
         new_data = pd.DataFrame(
             np.random.randn(100, 3) + 2.0,  # Shift mean by 2
-            columns=['a', 'b', 'c']
+            columns=["a", "b", "c"],
         )
 
-        drift_scores = design_drift_alerts(
-            reference,
-            new_data,
-            threshold=0.2
-        )
+        drift_scores = design_drift_alerts(reference, new_data, threshold=0.2)
 
         # At least some scores should be high (different distributions)
         # The mean shift of 2.0 should create significant drift in most features
@@ -250,12 +211,12 @@ class TestDriftDetection:
 
     def test_drift_alerts_edge_case_single_feature(self):
         """Test drift detection with single feature."""
-        reference = pd.DataFrame({'x': np.random.randn(50)})
-        new_data = pd.DataFrame({'x': np.random.randn(50) + 1.0})
+        reference = pd.DataFrame({"x": np.random.randn(50)})
+        new_data = pd.DataFrame({"x": np.random.randn(50) + 1.0})
 
         drift_scores = design_drift_alerts(reference, new_data)
-        assert 'x' in drift_scores
-        assert drift_scores['x'] > 0
+        assert "x" in drift_scores
+        assert drift_scores["x"] > 0
 
 
 class TestFeatureConsistency:
@@ -276,14 +237,16 @@ class TestFeatureConsistency:
     def test_validate_consistency_different_rankings(self):
         """Test consistency with different feature rankings."""
         np.random.seed(42)
-        df1 = pd.DataFrame(np.random.randn(50, 3), columns=['a', 'b', 'c'])
+        df1 = pd.DataFrame(np.random.randn(50, 3), columns=["a", "b", "c"])
 
         # Create df2 with reversed importance
-        df2 = pd.DataFrame({
-            'a': np.random.randn(50) * 0.1,  # Low importance
-            'b': np.random.randn(50) * 0.5,  # Medium
-            'c': np.random.randn(50) * 2.0,  # High importance
-        })
+        df2 = pd.DataFrame(
+            {
+                "a": np.random.randn(50) * 0.1,  # Low importance
+                "b": np.random.randn(50) * 0.5,  # Medium
+                "c": np.random.randn(50) * 2.0,  # High importance
+            }
+        )
 
         summaries = [df1, df2]
         corr = validate_feature_importance_consistency(summaries)
@@ -302,11 +265,7 @@ class TestExportFunctions:
         X, _ = sample_classification_data
         output_path = temp_dir / "summary.json"
 
-        result = export_summary_json(
-            shap_values_explanation,
-            X[:50],
-            str(output_path)
-        )
+        result = export_summary_json(shap_values_explanation, X[:50], str(output_path))
 
         assert result.exists()
 
@@ -350,10 +309,7 @@ class TestDataQuality:
     def test_automate_data_quality_checks(self, sample_dataframe, temp_dir):
         """Test data quality check report generation."""
         output_path = temp_dir / "quality.json"
-        result = automate_data_quality_checks(
-            sample_dataframe,
-            str(output_path)
-        )
+        result = automate_data_quality_checks(sample_dataframe, str(output_path))
 
         assert result.exists()
 
@@ -367,10 +323,9 @@ class TestDataQuality:
         """Test data quality detection with outliers."""
         # Note: 3-sigma rule has issues with extreme outliers (they inflate the std)
         # This test just verifies the function runs and returns valid structure
-        df = pd.DataFrame({
-            'a': [1, 2, 3, 4, 5, 6, 7, 8, 9, 100],
-            'b': [5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
-        })
+        df = pd.DataFrame(
+            {"a": [1, 2, 3, 4, 5, 6, 7, 8, 9, 100], "b": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14]}
+        )
 
         output_path = temp_dir / "quality_outliers.json"
         result = automate_data_quality_checks(df, str(output_path))
@@ -475,11 +430,7 @@ class TestFeatureSelection:
         """Test feature selection based on SHAP importance."""
         X, _ = sample_classification_data
 
-        result = develop_feature_selection_module(
-            shap_values_explanation,
-            X[:50],
-            top_n=3
-        )
+        result = develop_feature_selection_module(shap_values_explanation, X[:50], top_n=3)
 
         assert isinstance(result, pd.DataFrame)
         assert result.shape[1] == 3  # Top 3 features
@@ -494,7 +445,7 @@ class TestFeatureSelection:
         result = develop_feature_selection_module(
             shap_values_explanation,
             X[:50],
-            top_n=10  # More than available
+            top_n=10,  # More than available
         )
 
         assert result.shape[1] == 5  # All features
@@ -511,7 +462,7 @@ class TestEdgeCases:
         empty_shap = shap.Explanation(
             values=np.array([]).reshape(0, 5),
             base_values=np.array([]),
-            data=np.array([]).reshape(0, 5)
+            data=np.array([]).reshape(0, 5),
         )
 
         output_path = temp_dir / "empty_summary.json"
@@ -521,8 +472,8 @@ class TestEdgeCases:
 
     def test_missing_columns_in_drift(self):
         """Test drift detection with mismatched columns."""
-        reference = pd.DataFrame({'a': [1, 2, 3], 'b': [4, 5, 6]})
-        new_data = pd.DataFrame({'a': [1, 2, 3], 'b': [4, 5, 6]})
+        reference = pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6]})
+        new_data = pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6]})
 
         # Should work with matching columns
         drift_scores = design_drift_alerts(reference, new_data)
@@ -530,14 +481,11 @@ class TestEdgeCases:
 
     def test_preprocess_all_nan_column(self):
         """Test preprocessing with all-NaN column."""
-        df = pd.DataFrame({
-            'a': [1, 2, 3],
-            'b': [np.nan, np.nan, np.nan]
-        })
+        df = pd.DataFrame({"a": [1, 2, 3], "b": [np.nan, np.nan, np.nan]})
 
         result = preprocess_data_pipeline(df)
         # Should handle gracefully (fill with median or 0)
-        assert not result['a'].isna().any()
+        assert not result["a"].isna().any()
 
     def test_enhance_notebook_nonexistent(self, temp_dir):
         """Test notebook enhancement with nonexistent file."""

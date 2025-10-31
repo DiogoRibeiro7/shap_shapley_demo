@@ -261,11 +261,7 @@ def improve_error_handling(log_file: str = "logs/shap_app.log") -> logging.Logge
     logger.info(f"Configured structured logging at {log_file}")
 
     def safe_api_call(
-        func: Callable[..., Any],
-        *args: Any,
-        retries: int = 3,
-        delay: float = 2.0,
-        **kwargs: Any
+        func: Callable[..., Any], *args: Any, retries: int = 3, delay: float = 2.0, **kwargs: Any
     ) -> Any:
         """Retry wrapper for API calls with exponential backoff."""
         for i in range(retries):
@@ -321,11 +317,7 @@ def extend_feature_analysis(
 
     # Approximate pairwise SHAP interaction strengths
     distances = pairwise_distances(shap_df.T)
-    interactions = pd.DataFrame(
-        1 / (1 + distances),
-        index=X.columns,
-        columns=X.columns
-    )
+    interactions = pd.DataFrame(1 / (1 + distances), index=X.columns, columns=X.columns)
     interactions_path = Path(output_dir) / "shap_interactions.csv"
     interactions.to_csv(interactions_path)
     logger.debug(f"Saved interactions to {interactions_path}")
@@ -406,9 +398,7 @@ def optimize_performance(
     n_samples = min(len(X), 100)
     start = time.time()
 
-    Parallel(n_jobs=n_jobs)(
-        delayed(shap_func)(X.iloc[[i]]) for i in range(n_samples)
-    )
+    Parallel(n_jobs=n_jobs)(delayed(shap_func)(X.iloc[[i]]) for i in range(n_samples))
 
     elapsed = time.time() - start
 

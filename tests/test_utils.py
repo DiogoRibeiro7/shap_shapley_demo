@@ -75,6 +75,7 @@ class TestTimestampGeneration:
         assert "T" in timestamp
         # Should be parseable as ISO format
         from datetime import datetime
+
         parsed = datetime.fromisoformat(timestamp)
         assert parsed is not None
 

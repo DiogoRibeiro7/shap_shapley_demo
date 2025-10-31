@@ -134,11 +134,7 @@ def add_explanation_dashboard(
         color=mean_abs.values,
         color_continuous_scale="Turbo",
     )
-    fig.update_layout(
-        xaxis_title="Mean |SHAP|",
-        yaxis_title="Feature",
-        template="plotly_white"
-    )
+    fig.update_layout(xaxis_title="Mean |SHAP|", yaxis_title="Feature", template="plotly_white")
 
     output_path_obj = Path(output_path)
     ensure_directory(output_path_obj.parent)
@@ -171,16 +167,13 @@ def integrate_model_registry(
         registry = cast("list[dict[str, Any]]", load_json(registry_path))
         logger.debug(f"Loaded existing registry with {len(registry)} entries")
 
-    entry = {
-        "timestamp": get_timestamp(),
-        "metadata": metadata
-    }
+    entry = {"timestamp": get_timestamp(), "metadata": metadata}
     registry.append(entry)
 
     save_json(registry, registry_path)
 
     # Save model with version
-    version = metadata.get('version', 'latest')
+    version = metadata.get("version", "latest")
     model_path = f"model_{version}.joblib"
     serialize_model(model, model_path)
 
@@ -211,10 +204,7 @@ def design_drift_alerts(
 
     drift_scores = {}
     for col in reference.columns:
-        drift_score = compute_jensen_shannon_divergence(
-            reference[col],
-            new_data[col]
-        )
+        drift_score = compute_jensen_shannon_divergence(reference[col], new_data[col])
         drift_scores[col] = drift_score
 
     high_drift = {k: v for k, v in drift_scores.items() if v > threshold}
@@ -251,11 +241,7 @@ def benchmark_model_versions(
         return []
 
     registry = cast("list[dict[str, Any]]", load_json(registry_path))
-    versions = [
-        r["metadata"]["version"]
-        for r in registry
-        if "version" in r["metadata"]
-    ]
+    versions = [r["metadata"]["version"] for r in registry if "version" in r["metadata"]]
 
     logger.info(f"Found {len(versions)} model versions: {versions}")
     print(f"✅ Found {len(versions)} model versions: {versions}")
@@ -399,6 +385,7 @@ def enhance_notebook_experience(nb_path: str = "notebooks/shap_demo.ipynb") -> P
         return None
 
     import sys
+
     metadata = {
         "python_version": sys.version.split()[0],
         "shap_version": shap.__version__,
@@ -550,6 +537,7 @@ def add_metadata_tracking(output_path: str = "metadata/shap_metadata.json") -> P
     logger.info("Recording SHAP computation metadata")
 
     import os
+
     meta = {
         "timestamp": get_timestamp(),
         "commit_hash": os.getenv("GITHUB_SHA", "unknown"),

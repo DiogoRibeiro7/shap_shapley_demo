@@ -167,7 +167,7 @@ def add_feature_metadata_registry(
             "dtype": str(features[col].dtype),
             "unit": "N/A",
             "last_update": get_timestamp(),
-            "description": f"Feature {col} used in SHAP explanations"
+            "description": f"Feature {col} used in SHAP explanations",
         }
 
     registry_path_obj = Path(registry_path)
@@ -215,10 +215,7 @@ def analyze_memory_profile(
     plt.savefig(report_path.with_suffix(".png"))
     plt.close()
 
-    report_path.write_text(
-        f"<h2>Approx. memory usage: {total_mem:.2f} MB</h2>",
-        encoding="utf-8"
-    )
+    report_path.write_text(f"<h2>Approx. memory usage: {total_mem:.2f} MB</h2>", encoding="utf-8")
 
     tracemalloc.stop()
 
@@ -295,11 +292,7 @@ def add_hyperparameter_tracking(
     """
     logger.info(f"Tracking hyperparameters to {output_path}")
 
-    report = {
-        "timestamp": get_timestamp(),
-        "param_grid": param_grid,
-        "best_params": best_params
-    }
+    report = {"timestamp": get_timestamp(), "param_grid": param_grid, "best_params": best_params}
 
     output_path_obj = save_json(report, output_path)
 
@@ -376,8 +369,7 @@ def simulate_realtime_updates(
 
     timestamps = pd.date_range(datetime.utcnow(), periods=n_samples, freq="S")
     df = pd.DataFrame(
-        np.random.randn(n_samples, features),
-        columns=[f"f{i}" for i in range(features)]
+        np.random.randn(n_samples, features), columns=[f"f{i}" for i in range(features)]
     )
     df["timestamp"] = timestamps
 
@@ -423,7 +415,7 @@ def add_data_version_control(
         "dataset": dataset_path,
         "sha256": sha,
         "linked_baseline": "baseline_shap_v1",
-        "timestamp": get_timestamp()
+        "timestamp": get_timestamp(),
     }
 
     meta_path = save_json(meta, metadata_path)
@@ -461,7 +453,7 @@ def implement_anomaly_explanation(
         "timestamp": get_timestamp(),
         "n_anomalies": len(high_anom),
         "avg_score": float(high_anom["score"].mean()),
-        "top_features": shap_values.mean().abs().sort_values(ascending=False).head(5).to_dict()
+        "top_features": shap_values.mean().abs().sort_values(ascending=False).head(5).to_dict(),
     }
 
     summary_path = save_json(summary, output_path)
@@ -527,10 +519,9 @@ def add_influence_diagnostics(
     logger.info(f"Computing influence diagnostics to {output_path}")
 
     influence = np.square(residuals) * np.sum(np.square(shap_values), axis=1)
-    df = pd.DataFrame({
-        "index": np.arange(len(influence)),
-        "influence": influence
-    }).sort_values("influence", ascending=False)
+    df = pd.DataFrame({"index": np.arange(len(influence)), "influence": influence}).sort_values(
+        "influence", ascending=False
+    )
 
     output_path_obj = Path(output_path)
     ensure_directory(output_path_obj.parent)
@@ -692,9 +683,7 @@ def research_interaction_effects(
     plt.close()
 
     # Save CSV alongside, keeping index and header
-    (Path(output_dir) / "interaction_matrix.csv").write_text(
-        corr_df.to_csv(), encoding="utf-8"
-    )
+    (Path(output_dir) / "interaction_matrix.csv").write_text(corr_df.to_csv(), encoding="utf-8")
 
     logger.info("SHAP interaction heatmap saved to %s", out_path)
     print(f"✅ SHAP interaction heatmap saved to {out_path}")
@@ -714,8 +703,7 @@ def add_kubernetes_support(helm_dir: str = "deploy/helm/shap-analytics") -> Path
 
     Path(helm_dir, "values.yaml").write_text(yaml.dump(values_yaml), encoding="utf-8")
     Path(helm_dir, "Chart.yaml").write_text(
-        "name: shap-analytics\nversion: 0.1.0\napiVersion: v2\n",
-        encoding="utf-8"
+        "name: shap-analytics\nversion: 0.1.0\napiVersion: v2\n", encoding="utf-8"
     )
 
     logger.info(f"Helm chart created under {helm_dir}")
@@ -872,7 +860,9 @@ def investigate_high_dimensionality(
     """Benchmark SHAP performance in high-dimensional datasets using PCA."""
     from sklearn.decomposition import PCA
 
-    logger.info(f"Investigating high dimensionality (n_features={n_features}, n_samples={n_samples})")
+    logger.info(
+        f"Investigating high dimensionality (n_features={n_features}, n_samples={n_samples})"
+    )
     ensure_directory(output_dir)
 
     # Generate synthetic data to exercise PCA in high-dimensional regime
@@ -902,8 +892,7 @@ def create_user_tutorials(tutorial_dir: str = "docs/tutorials") -> Path:
 
     md_tutorial = Path(tutorial_dir) / "overview.md"
     md_tutorial.write_text(
-        "# SHAP Tutorials\n- intro_shap.ipynb\n- interpretation_guide.md\n",
-        encoding="utf-8"
+        "# SHAP Tutorials\n- intro_shap.ipynb\n- interpretation_guide.md\n", encoding="utf-8"
     )
 
     logger.info(f"Tutorials scaffolded under {tutorial_dir}")
@@ -945,8 +934,8 @@ def expand_time_series_support(
     rolled = pd.concat([ts_data["target"].shift(i) for i in range(1, lag + 1)], axis=1)
     rolled.columns = [f"lag_{i}" for i in range(1, lag + 1)]
     corr = rolled.corrwith(ts_data["target"])
-    x: list[str] = [str(v) for v in corr.index]                 # labels (bar categories)
-    h: list[float] = corr.astype(float).tolist()                # heights (numbers)
+    x: list[str] = [str(v) for v in corr.index]  # labels (bar categories)
+    h: list[float] = corr.astype(float).tolist()  # heights (numbers)
 
     plt.bar(x, h, color="teal")
     plt.title("Autoregressive SHAP Correlation")

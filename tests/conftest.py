@@ -20,22 +20,14 @@ from sklearn.ensemble import RandomForestClassifier
 def sample_dataframe() -> pd.DataFrame:
     """Create a sample DataFrame for testing."""
     np.random.seed(42)
-    return pd.DataFrame(
-        np.random.randn(100, 5),
-        columns=[f"feature_{i}" for i in range(5)]
-    )
+    return pd.DataFrame(np.random.randn(100, 5), columns=[f"feature_{i}" for i in range(5)])
 
 
 @pytest.fixture
 def sample_classification_data() -> tuple[pd.DataFrame, pd.Series]:
     """Create sample classification dataset."""
     X, y = make_classification(
-        n_samples=100,
-        n_features=5,
-        n_informative=3,
-        n_redundant=1,
-        n_classes=2,
-        random_state=42
+        n_samples=100, n_features=5, n_informative=3, n_redundant=1, n_classes=2, random_state=42
     )
     X_df = pd.DataFrame(X, columns=[f"feature_{i}" for i in range(5)])
     y_series = pd.Series(y, name="target")
@@ -52,9 +44,7 @@ def trained_model(sample_classification_data) -> RandomForestClassifier:
 
 
 @pytest.fixture
-def shap_values_explanation(
-    trained_model, sample_classification_data
-) -> shap.Explanation:
+def shap_values_explanation(trained_model, sample_classification_data) -> shap.Explanation:
     """Create SHAP Explanation object for testing."""
     X, _ = sample_classification_data
     background = X.sample(20, random_state=42)
@@ -85,13 +75,14 @@ def mock_config_files(temp_dir: Path) -> dict[str, Path]:
             "DRIFT_THRESHOLD": {"type": "number"},
             "CACHE_TTL_HOURS": {"type": "integer"},
         },
-        "required": ["MODEL_PATH"]
+        "required": ["MODEL_PATH"],
     }
 
     config_path = temp_dir / "config.json"
     schema_path = temp_dir / "config_schema.json"
 
     import json
+
     config_path.write_text(json.dumps(config))
     schema_path.write_text(json.dumps(schema))
 
@@ -102,10 +93,7 @@ def mock_config_files(temp_dir: Path) -> dict[str, Path]:
 def sample_shap_dataframe() -> pd.DataFrame:
     """Create a sample SHAP values DataFrame."""
     np.random.seed(42)
-    return pd.DataFrame(
-        np.random.randn(50, 5) * 0.5,
-        columns=[f"feature_{i}" for i in range(5)]
-    )
+    return pd.DataFrame(np.random.randn(50, 5) * 0.5, columns=[f"feature_{i}" for i in range(5)])
 
 
 @pytest.fixture
@@ -121,12 +109,7 @@ def trained_rf_model(sample_classification_data) -> RandomForestClassifier:
 def small_trained_model() -> RandomForestClassifier:
     """Create and train a small RandomForest model with minimal samples."""
     X, y = make_classification(
-        n_samples=30,
-        n_features=5,
-        n_informative=3,
-        n_redundant=1,
-        n_classes=2,
-        random_state=42
+        n_samples=30, n_features=5, n_informative=3, n_redundant=1, n_classes=2, random_state=42
     )
     model = RandomForestClassifier(n_estimators=5, max_depth=2, random_state=42)
     model.fit(X, y)
@@ -142,7 +125,7 @@ def small_dataset() -> tuple[pd.DataFrame, pd.Series]:
         n_informative=3,
         n_redundant=1,
         n_classes=2,
-        random_state=42
+        random_state=42,
     )
     X_df = pd.DataFrame(X, columns=[f"feature_{i}" for i in range(5)])
     y_series = pd.Series(y, name="target")
@@ -188,4 +171,5 @@ def cleanup_test_artifacts():
     yield
     # Cleanup logic if needed
     import matplotlib.pyplot as plt
-    plt.close('all')
+
+    plt.close("all")

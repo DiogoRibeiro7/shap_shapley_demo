@@ -35,30 +35,22 @@ from src.shap_analytics.shap_future import (
 class TestCaching:
     """Test SHAP caching functionality."""
 
-    def test_cache_explanations_creates_file(
-        self, shap_values_explanation, temp_dir
-    ):
+    def test_cache_explanations_creates_file(self, shap_values_explanation, temp_dir):
         """Test that cache file is created."""
         cache_path = cache_explanations_locally(
-            shap_values_explanation,
-            cache_dir=str(temp_dir),
-            ttl_hours=1
+            shap_values_explanation, cache_dir=str(temp_dir), ttl_hours=1
         )
 
         assert cache_path.exists()
         assert cache_path.suffix == ".pkl"
         assert cache_path.name == "shap_cache.pkl"
 
-    def test_cache_stores_and_retrieves_correctly(
-        self, shap_values_explanation, temp_dir
-    ):
+    def test_cache_stores_and_retrieves_correctly(self, shap_values_explanation, temp_dir):
         """Test that cached SHAP values can be retrieved."""
         import joblib
 
         cache_path = cache_explanations_locally(
-            shap_values_explanation,
-            cache_dir=str(temp_dir),
-            ttl_hours=24
+            shap_values_explanation, cache_dir=str(temp_dir), ttl_hours=24
         )
 
         # Load cached data
@@ -70,8 +62,7 @@ class TestCaching:
 
         # Check values match
         np.testing.assert_array_almost_equal(
-            cached_data["values"].values,
-            shap_values_explanation.values
+            cached_data["values"].values, shap_values_explanation.values
         )
 
     def test_cache_eviction_with_ttl(self, shap_values_explanation, temp_dir):
@@ -81,17 +72,10 @@ class TestCaching:
 
         old_cache = temp_dir / "old_cache.pkl"
         old_timestamp = time.time() - (25 * 3600)  # 25 hours ago
-        joblib.dump(
-            {"timestamp": old_timestamp, "values": shap_values_explanation},
-            old_cache
-        )
+        joblib.dump({"timestamp": old_timestamp, "values": shap_values_explanation}, old_cache)
 
         # Create new cache with TTL of 24 hours
-        cache_explanations_locally(
-            shap_values_explanation,
-            cache_dir=str(temp_dir),
-            ttl_hours=24
-        )
+        cache_explanations_locally(shap_values_explanation, cache_dir=str(temp_dir), ttl_hours=24)
 
         # Old cache should be evicted
         assert not old_cache.exists()
@@ -101,7 +85,7 @@ class TestCaching:
         cache_path = cache_explanations_locally(
             shap_values_explanation,
             cache_dir=None,  # Use system default
-            ttl_hours=1
+            ttl_hours=1,
         )
 
         assert cache_path.exists()
@@ -110,9 +94,7 @@ class TestCaching:
         # Cleanup
         cache_path.unlink()
 
-    def test_cache_handles_corrupted_files(
-        self, shap_values_explanation, temp_dir
-    ):
+    def test_cache_handles_corrupted_files(self, shap_values_explanation, temp_dir):
         """Test that corrupted cache files don't crash the system."""
         # Create corrupted cache file
         corrupted = temp_dir / "corrupted.pkl"
@@ -120,9 +102,7 @@ class TestCaching:
 
         # Should handle gracefully and create new cache
         cache_path = cache_explanations_locally(
-            shap_values_explanation,
-            cache_dir=str(temp_dir),
-            ttl_hours=1
+            shap_values_explanation, cache_dir=str(temp_dir), ttl_hours=1
         )
 
         assert cache_path.exists()
@@ -138,11 +118,7 @@ class TestVisualizationEnhancement:
         X, _ = sample_classification_data
         output_path = temp_dir / "viz.html"
 
-        result = enhance_visualizations(
-            shap_values_explanation,
-            X[:50],
-            str(output_path)
-        )
+        result = enhance_visualizations(shap_values_explanation, X[:50], str(output_path))
 
         assert result.exists()
         assert result.suffix == ".html"
@@ -168,14 +144,13 @@ class TestVisualizationEnhancement:
         size2 = path2.stat().st_size
         assert abs(size1 - size2) / max(size1, size2) < 0.05
 
-    def test_visualization_with_single_feature(
-        self, sample_classification_data, temp_dir
-    ):
+    def test_visualization_with_single_feature(self, sample_classification_data, temp_dir):
         """Test visualization with single feature."""
         X, y = sample_classification_data
-        X_single = X[['feature_0']]
+        X_single = X[["feature_0"]]
 
         from sklearn.ensemble import RandomForestClassifier
+
         model = RandomForestClassifier(n_estimators=5, random_state=42)
         model.fit(X_single, y)
 
@@ -276,11 +251,7 @@ class TestFeatureAnalysis:
         """Test that feature analysis creates correlation heatmap and CSV."""
         X, _ = sample_classification_data
 
-        result = extend_feature_analysis(
-            shap_values_explanation,
-            X[:50],
-            str(temp_dir)
-        )
+        result = extend_feature_analysis(shap_values_explanation, X[:50], str(temp_dir))
 
         assert "corr_path" in result
         assert "interactions" in result
@@ -297,18 +268,14 @@ class TestFeatureAnalysis:
         assert interactions_df.shape == (5, 5)  # 5x5 for 5 features
         assert np.allclose(np.diag(interactions_df.values), 1.0)  # Diagonal is 1
 
-    def test_feature_analysis_deterministic(
-        self, sample_classification_data, temp_dir
-    ):
+    def test_feature_analysis_deterministic(self, sample_classification_data, temp_dir):
         """Test that feature analysis is deterministic with same SHAP values."""
         X, _ = sample_classification_data
 
         # Create fixed SHAP values
         np.random.seed(42)
         fixed_shap = shap.Explanation(
-            values=np.random.randn(50, 5),
-            base_values=np.zeros(50),
-            data=X[:50].values
+            values=np.random.randn(50, 5), base_values=np.zeros(50), data=X[:50].values
         )
 
         # Run twice
@@ -342,9 +309,7 @@ class TestUnitTestGeneration:
 class TestPerformanceOptimization:
     """Test performance optimization functions."""
 
-    def test_optimize_performance_runs_benchmark(
-        self, sample_classification_data
-    ):
+    def test_optimize_performance_runs_benchmark(self, sample_classification_data):
         """Test that performance benchmark runs."""
         X, _ = sample_classification_data
 
@@ -358,9 +323,7 @@ class TestPerformanceOptimization:
         assert elapsed > 0
         assert elapsed < 10  # Should complete within 10 seconds
 
-    def test_performance_scales_with_parallelization(
-        self, sample_classification_data
-    ):
+    def test_performance_scales_with_parallelization(self, sample_classification_data):
         """Test that parallel jobs improve performance."""
         X, _ = sample_classification_data
 
@@ -402,9 +365,7 @@ class TestReleaseAutomation:
     def test_prepare_release_automation_creates_files(self, temp_dir):
         """Test that release automation files are created."""
         workflow_dir = temp_dir / "workflows"
-        workflow_path, changelog_path = prepare_release_automation(
-            str(workflow_dir)
-        )
+        workflow_path, changelog_path = prepare_release_automation(str(workflow_dir))
 
         assert workflow_path.exists()
         assert changelog_path.exists()
@@ -421,24 +382,18 @@ class TestReleaseAutomation:
 class TestDeterministicBehavior:
     """Test that experimental methods run deterministically with fixed seeds."""
 
-    def test_cache_deterministic_timestamps_excluded(
-        self, shap_values_explanation, temp_dir
-    ):
+    def test_cache_deterministic_timestamps_excluded(self, shap_values_explanation, temp_dir):
         """Test that cache structure is deterministic (excluding timestamps)."""
         import joblib
 
         cache1 = cache_explanations_locally(
-            shap_values_explanation,
-            cache_dir=str(temp_dir / "cache1"),
-            ttl_hours=1
+            shap_values_explanation, cache_dir=str(temp_dir / "cache1"), ttl_hours=1
         )
 
         time.sleep(0.1)  # Small delay
 
         cache2 = cache_explanations_locally(
-            shap_values_explanation,
-            cache_dir=str(temp_dir / "cache2"),
-            ttl_hours=1
+            shap_values_explanation, cache_dir=str(temp_dir / "cache2"), ttl_hours=1
         )
 
         # Load both
@@ -446,41 +401,29 @@ class TestDeterministicBehavior:
         data2 = joblib.load(cache2)
 
         # SHAP values should be identical
-        np.testing.assert_array_equal(
-            data1["values"].values,
-            data2["values"].values
-        )
+        np.testing.assert_array_equal(data1["values"].values, data2["values"].values)
 
-    def test_feature_analysis_with_fixed_seed(
-        self, sample_classification_data, temp_dir
-    ):
+    def test_feature_analysis_with_fixed_seed(self, sample_classification_data, temp_dir):
         """Test feature analysis with fixed random seed."""
         X, _ = sample_classification_data
 
         # Create SHAP with fixed seed
         np.random.seed(42)
         shap1 = shap.Explanation(
-            values=np.random.randn(30, 5),
-            base_values=np.zeros(30),
-            data=X[:30].values
+            values=np.random.randn(30, 5), base_values=np.zeros(30), data=X[:30].values
         )
 
         # Create identical SHAP with same seed
         np.random.seed(42)
         shap2 = shap.Explanation(
-            values=np.random.randn(30, 5),
-            base_values=np.zeros(30),
-            data=X[:30].values
+            values=np.random.randn(30, 5), base_values=np.zeros(30), data=X[:30].values
         )
 
         result1 = extend_feature_analysis(shap1, X[:30], str(temp_dir / "seed1"))
         result2 = extend_feature_analysis(shap2, X[:30], str(temp_dir / "seed2"))
 
         # Results should be identical
-        pd.testing.assert_frame_equal(
-            result1["interactions"],
-            result2["interactions"]
-        )
+        pd.testing.assert_frame_equal(result1["interactions"], result2["interactions"])
 
 
 class TestEdgeCases:
@@ -491,21 +434,15 @@ class TestEdgeCases:
         empty_shap = shap.Explanation(
             values=np.array([]).reshape(0, 5),
             base_values=np.array([]),
-            data=np.array([]).reshape(0, 5)
+            data=np.array([]).reshape(0, 5),
         )
 
         # Should handle gracefully
-        cache_path = cache_explanations_locally(
-            empty_shap,
-            cache_dir=str(temp_dir),
-            ttl_hours=1
-        )
+        cache_path = cache_explanations_locally(empty_shap, cache_dir=str(temp_dir), ttl_hours=1)
 
         assert cache_path.exists()
 
-    def test_visualization_with_nan_values(
-        self, sample_classification_data, temp_dir
-    ):
+    def test_visualization_with_nan_values(self, sample_classification_data, temp_dir):
         """Test visualization handles NaN in SHAP values."""
         X, _ = sample_classification_data
 
@@ -514,9 +451,7 @@ class TestEdgeCases:
         shap_vals[0, 0] = np.nan
 
         shap_with_nan = shap.Explanation(
-            values=shap_vals,
-            base_values=np.zeros(10),
-            data=X[:10].values
+            values=shap_vals, base_values=np.zeros(10), data=X[:10].values
         )
 
         output_path = temp_dir / "viz_nan.html"
@@ -547,6 +482,7 @@ class TestEdgeCases:
 
         # Cleanup
         import shutil
+
         shutil.rmtree("nonexistent")
 
     def test_ci_workflow_creates_parent_dirs(self, temp_dir):
