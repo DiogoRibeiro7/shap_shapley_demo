@@ -80,6 +80,8 @@ build-backend = "poetry.core.masonry.api"
 target-version = "py310"
 line-length = 100
 indent-width = 4
+# ✅ Tell Ruff where your source tree starts so it can classify first-party imports
+src = ["src"]
 
 [tool.ruff.lint]
 select = [
@@ -101,6 +103,11 @@ ignore = [
     "B008",   # Function call in argument defaults
     "B905",   # zip without strict parameter
 ]
+
+# ✅ Mark your package as first-party for isort grouping
+[tool.ruff.lint.isort]
+known-first-party = ["shap_analytics"]
+lines-between-types = 1
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]  # Unused imports in __init__.py
