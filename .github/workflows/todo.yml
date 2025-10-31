@@ -72,7 +72,7 @@ jobs:
           fi
 
       - name: Upload scan artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: todo-scan
           path: todo_matches.txt
