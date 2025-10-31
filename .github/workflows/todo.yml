@@ -16,7 +16,7 @@ on:
         default: user
   push:
     # Use your real default branch here (master/main)
-    branches: [ develop ]
+    branches: [ main ]
     # Optional: run only when source files change, not docs/CI files.
     paths:
       - '**/*.ts'
