@@ -15,10 +15,6 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import pairwise_distances
 
 
-# ============================================================
-# IMPLEMENTED FUNCTIONS — ALL PREVIOUS TODOs RESOLVED
-# ============================================================
-
 def retrain_model_periodically(model_class, X_train: pd.DataFrame, y_train: pd.Series,
                                monitor_func, drift_threshold: float = 0.2,
                                retrain_interval_hours: int = 24) -> None:
