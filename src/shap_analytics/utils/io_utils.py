@@ -39,7 +39,7 @@ def load_csv_with_types(
         >>> type_map = {"age": int, "score": float, "name": str}
         >>> df = load_csv_with_types("data.csv", type_map=type_map)
     """
-    df = cast(pd.DataFrame, pd.read_csv(file_path, **kwargs))
+    df = cast("pd.DataFrame", pd.read_csv(file_path, **kwargs))
 
     if type_map:
         for col, dtype in type_map.items():

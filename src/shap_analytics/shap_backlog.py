@@ -251,13 +251,13 @@ def implement_model_drift_dashboard(
         m = 0.5 * (p + q)
         p = np.clip(p, 1e-12, None)
         q = np.clip(q, 1e-12, None)
-        return cast(float, 0.5 * (np.sum(p * np.log(p / m)) + np.sum(q * np.log(q / m))))
+        return cast("float", 0.5 * (np.sum(p * np.log(p / m)) + np.sum(q * np.log(q / m))))
 
     drift = []
     for col in shap_new.columns:
         p = shap_old[col].value_counts(normalize=True).reindex(shap_new[col].unique(), fill_value=0)
         q = shap_new[col].value_counts(normalize=True).reindex(shap_new[col].unique(), fill_value=0)
-        drift.append(js_divergence(cast(NDArray[Any], p.values), cast(NDArray[Any], q.values)))
+        drift.append(js_divergence(cast("NDArray[Any]", p.values), cast("NDArray[Any]", q.values)))
 
     plt.figure(figsize=(8, 4))
     plt.bar(shap_new.columns, drift, color="salmon")

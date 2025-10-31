@@ -9,13 +9,14 @@ import numpy as np
 import pandas as pd
 import pytest
 import shap
+from sklearn.ensemble import RandomForestClassifier
+
 from shap_analytics.shap_explain import (
     compute_shap_values,
     monitor_feature_drift,
     validate_background_sample,
     verify_shap_reconstruction,
 )
-from sklearn.ensemble import RandomForestClassifier
 
 
 @pytest.mark.unit

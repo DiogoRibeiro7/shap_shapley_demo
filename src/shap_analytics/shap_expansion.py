@@ -166,7 +166,7 @@ def integrate_model_registry(
     registry_path_obj = Path(registry_path)
 
     if registry_path_obj.exists():
-        registry = cast(list[dict[str, Any]], load_json(registry_path))
+        registry = cast("list[dict[str, Any]]", load_json(registry_path))
         logger.debug(f"Loaded existing registry with {len(registry)} entries")
 
     entry = {
@@ -248,7 +248,7 @@ def benchmark_model_versions(
         print("⚠️ No registry found, skipping benchmark.")
         return []
 
-    registry = cast(list[dict[str, Any]], load_json(registry_path))
+    registry = cast("list[dict[str, Any]]", load_json(registry_path))
     versions = [
         r["metadata"]["version"]
         for r in registry
@@ -697,7 +697,7 @@ def develop_feature_selection_module(
 
     mean_abs = compute_mean_abs_shap(shap_values)
     top_features = np.array(X.columns)[np.argsort(mean_abs)[-top_n:][::-1]]
-    X_reduced = cast(pd.DataFrame, X[top_features.tolist()])
+    X_reduced = cast("pd.DataFrame", X[top_features.tolist()])
 
     logger.info(f"Selected features: {list(top_features)}")
     print(f"✅ Selected top {top_n} features: {list(top_features)}")

@@ -99,7 +99,7 @@ def load_json(input_path: str | Path) -> dict[str, Any]:
     path = Path(input_path)
     if not path.exists():
         raise FileNotFoundError(f"JSON file not found: {input_path}")
-    return cast(dict[str, Any], json.loads(path.read_text(encoding="utf-8")))
+    return cast("dict[str, Any]", json.loads(path.read_text(encoding="utf-8")))
 
 
 def compute_jensen_shannon_divergence(
@@ -259,7 +259,7 @@ def compute_mean_abs_shap(
     if values.ndim == 3:
         values = values[..., 1]
 
-    return cast(npt.NDArray[Any], np.abs(values).mean(axis=axis))
+    return cast("npt.NDArray[Any]", np.abs(values).mean(axis=axis))
 
 
 def setup_logger(
