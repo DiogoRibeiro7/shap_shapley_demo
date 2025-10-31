@@ -16,7 +16,7 @@ on:
         default: bot
   push:
     # Use your real default branch here (master/main)
-    branches: [ master ]
+    branches: [ develop ]
     # Optional: run only when source files change, not docs/CI files.
     paths:
       - '**/*.ts'
