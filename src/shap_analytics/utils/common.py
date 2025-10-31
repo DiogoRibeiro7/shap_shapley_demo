@@ -5,19 +5,23 @@ This module contains shared utilities used across all SHAP modules to avoid
 code duplication and ensure consistency.
 """
 
+from __future__ import annotations
+
 import hashlib
 import json
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import joblib
 import numpy as np
 import numpy.typing as npt
 import pandas as pd
-import shap
 from scipy.spatial.distance import jensenshannon
+
+if TYPE_CHECKING:
+    import shap
 
 __all__ = [
     "compute_jensen_shannon_divergence",
