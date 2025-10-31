@@ -137,7 +137,7 @@ Documentation improvements are always welcome! This includes:
 
 3. **Add upstream remote**:
    ```bash
-   git remote add upstream https://github.com/originalowner/shap_shapley_demo.git
+   git remote add upstream https://github.com/diogoribeiro7/shap_shapley_demo.git
    ```
 
 4. **Create a virtual environment**:

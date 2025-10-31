@@ -14,6 +14,7 @@ from typing import Any, cast
 
 import joblib
 import numpy as np
+import numpy.typing as npt
 import pandas as pd
 import shap
 from scipy.spatial.distance import jensenshannon
@@ -98,8 +99,8 @@ def load_json(input_path: str | Path) -> dict[str, Any]:
 
 
 def compute_jensen_shannon_divergence(
-    p: np.ndarray | pd.Series,
-    q: np.ndarray | pd.Series,
+    p: npt.NDArray[Any] | pd.Series[Any],
+    q: npt.NDArray[Any] | pd.Series[Any],
     bins: int = 20,
 ) -> float:
     """
@@ -235,9 +236,9 @@ def shap_to_dataframe(
 
 
 def compute_mean_abs_shap(
-    shap_values: shap.Explanation | np.ndarray,
+    shap_values: shap.Explanation | npt.NDArray[Any],
     axis: int = 0,
-) -> np.ndarray:
+) -> npt.NDArray[Any]:
     """
     Compute mean absolute SHAP values.
 
@@ -254,7 +255,7 @@ def compute_mean_abs_shap(
     if values.ndim == 3:
         values = values[..., 1]
 
-    return cast(np.ndarray, np.abs(values).mean(axis=axis))
+    return cast(npt.NDArray[Any], np.abs(values).mean(axis=axis))
 
 
 def setup_logger(

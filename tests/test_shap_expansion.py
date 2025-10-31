@@ -16,7 +16,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import shap
-from src.shap_expansion import (
+from src.shap_analytics.shap_expansion import (
     add_explanation_dashboard,
     add_metadata_tracking,
     add_model_card_generator,

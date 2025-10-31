@@ -697,7 +697,7 @@ def develop_feature_selection_module(
 
     mean_abs = compute_mean_abs_shap(shap_values)
     top_features = np.array(X.columns)[np.argsort(mean_abs)[-top_n:][::-1]]
-    X_reduced = X[top_features]
+    X_reduced = cast(pd.DataFrame, X[top_features.tolist()])
 
     logger.info(f"Selected features: {list(top_features)}")
     print(f"✅ Selected top {top_n} features: {list(top_features)}")

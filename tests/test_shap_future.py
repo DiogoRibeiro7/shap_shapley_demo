@@ -17,7 +17,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import shap
-from src.shap_future import (
+from src.shap_analytics.shap_future import (
     add_unit_tests,
     cache_explanations_locally,
     document_configuration_schema,

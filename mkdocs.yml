@@ -1,9 +1,9 @@
 site_name: SHAP Analytics Documentation
 site_description: Professional SHAP value computation, analysis, and deployment toolkit
 site_author: SHAP Analytics Contributors
-site_url: https://yourusername.github.io/shap-analytics
-repo_url: https://github.com/yourusername/shap-analytics
-repo_name: yourusername/shap-analytics
+site_url: https://diogoribeiro7.github.io/shap-analytics
+repo_url: https://github.com/diogoribeiro7/shap-analytics
+repo_name: diogoribeiro7/shap-analytics
 edit_uri: edit/main/docs/
 
 theme:
@@ -118,8 +118,8 @@ nav:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/yourusername/shap-analytics
+      link: https://github.com/diogoribeiro7/shap-analytics
     - icon: fontawesome/brands/python
       link: https://pypi.org/project/shap-analytics/
 
-copyright: Copyright &copy; 2025 SHAP Analytics Contributors
+copyright: Copyright &copy; 2025 Diogo Ribeiro

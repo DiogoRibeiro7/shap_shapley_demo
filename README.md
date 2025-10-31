@@ -2,12 +2,12 @@
 
 **Professional SHAP value computation, analysis, and deployment toolkit**
 
-[![CI Status](https://github.com/yourusername/shap-analytics/workflows/CI/badge.svg)](https://github.com/yourusername/shap-analytics/actions)
-[![codecov](https://codecov.io/gh/yourusername/shap-analytics/branch/main/graph/badge.svg)](https://codecov.io/gh/yourusername/shap-analytics)
+[![CI Status](https://github.com/diogoribeiro7/shap-analytics/workflows/CI/badge.svg)](https://github.com/diogoribeiro7/shap-analytics/actions)
+[![codecov](https://codecov.io/gh/diogoribeiro7/shap-analytics/branch/main/graph/badge.svg)](https://codecov.io/gh/diogoribeiro7/shap-analytics)
 [![PyPI version](https://badge.fury.io/py/shap-analytics.svg)](https://badge.fury.io/py/shap-analytics)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Documentation](https://img.shields.io/badge/docs-mkdocs-blue.svg)](https://yourusername.github.io/shap-analytics)
+[![Documentation](https://img.shields.io/badge/docs-mkdocs-blue.svg)](https://diogoribeiro7.github.io/shap-analytics)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![Type checked: mypy](https://img.shields.io/badge/type%20checked-mypy-blue.svg)](http://mypy-lang.org/)
 
@@ -69,7 +69,7 @@ SHAP Analytics is a comprehensive Python library for computing, analyzing, visua
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/shap-analytics.git
+git clone https://github.com/diogoribeiro7/shap-analytics.git
 cd shap-analytics
 
 # Run setup script
@@ -83,7 +83,7 @@ chmod +x setup.sh
 pip install shap-analytics
 
 # Or from source
-pip install git+https://github.com/yourusername/shap-analytics.git
+pip install git+https://github.com/diogoribeiro7/shap-analytics.git
 ```
 
 ### Using Docker
@@ -152,12 +152,12 @@ python -m shap_analytics.shap_explain
 
 ## Documentation
 
-Full documentation is available at [https://yourusername.github.io/shap-analytics](https://yourusername.github.io/shap-analytics)
+Full documentation is available at [https://diogoribeiro7.github.io/shap-analytics](https://diogoribeiro7.github.io/shap-analytics)
 
-- [Usage Guide](https://yourusername.github.io/shap-analytics/usage/)
-- [Architecture](https://yourusername.github.io/shap-analytics/architecture/)
-- [API Reference](https://yourusername.github.io/shap-analytics/api_reference/)
-- [Future Work](https://yourusername.github.io/shap-analytics/future_work/)
+- [Usage Guide](https://diogoribeiro7.github.io/shap-analytics/usage/)
+- [Architecture](https://diogoribeiro7.github.io/shap-analytics/architecture/)
+- [API Reference](https://diogoribeiro7.github.io/shap-analytics/api_reference/)
+- [Future Work](https://diogoribeiro7.github.io/shap-analytics/future_work/)
 
 ### Build Documentation Locally
 
@@ -218,7 +218,7 @@ shap_analytics/
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/shap-analytics.git
+git clone https://github.com/diogoribeiro7/shap-analytics.git
 cd shap-analytics
 
 # Run setup script
@@ -363,6 +363,7 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 See [Future Work](docs/future_work.md) for planned features and enhancements.
 
 **Upcoming Features:**
+
 - Async SHAP computation
 - Redis caching integration
 - XGBoost/LightGBM support
@@ -380,7 +381,7 @@ If you use SHAP Analytics in your research, please cite:
   author = {SHAP Analytics Contributors},
   year = {2025},
   version = {0.1.0},
-  url = {https://github.com/yourusername/shap-analytics}
+  url = {https://github.com/diogoribeiro7/shap-analytics}
 }
 ```
 
@@ -392,14 +393,10 @@ Built on top of the excellent [SHAP library](https://github.com/slundberg/shap) 
 
 ## Support
 
-- **Documentation**: [https://yourusername.github.io/shap-analytics](https://yourusername.github.io/shap-analytics)
-- **Issues**: [GitHub Issues](https://github.com/yourusername/shap-analytics/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/shap-analytics/discussions)
+- **Documentation**: [https://diogoribeiro7.github.io/shap-analytics](https://diogoribeiro7.github.io/shap-analytics)
+- **Issues**: [GitHub Issues](https://github.com/diogoribeiro7/shap-analytics/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/diogoribeiro7/shap-analytics/discussions)
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-**Made with ❤️ by SHAP Analytics Contributors**

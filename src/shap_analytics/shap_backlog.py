@@ -245,7 +245,7 @@ def implement_model_drift_dashboard(
 
     ensure_directory(output_dir)
 
-    def js_divergence(p: np.ndarray, q: np.ndarray) -> float:
+    def js_divergence(p: NDArray[Any], q: NDArray[Any]) -> float:
         """Compute Jensen-Shannon divergence."""
         p, q = np.array(p), np.array(q)
         m = 0.5 * (p + q)
@@ -257,7 +257,7 @@ def implement_model_drift_dashboard(
     for col in shap_new.columns:
         p = shap_old[col].value_counts(normalize=True).reindex(shap_new[col].unique(), fill_value=0)
         q = shap_new[col].value_counts(normalize=True).reindex(shap_new[col].unique(), fill_value=0)
-        drift.append(js_divergence(cast(np.ndarray, p.values), cast(np.ndarray, q.values)))
+        drift.append(js_divergence(cast(NDArray[Any], p.values), cast(NDArray[Any], q.values)))
 
     plt.figure(figsize=(8, 4))
     plt.bar(shap_new.columns, drift, color="salmon")
@@ -507,8 +507,8 @@ def build_llm_based_summary(
 
 
 def add_influence_diagnostics(
-    residuals: np.ndarray,
-    shap_values: np.ndarray,
+    residuals: NDArray[Any],
+    shap_values: NDArray[Any],
     output_path: str = "reports/influence_diagnostics.csv",
 ) -> Path:
     """

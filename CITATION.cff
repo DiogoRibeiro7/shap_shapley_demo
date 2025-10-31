@@ -4,15 +4,15 @@ type: software
 title: "SHAP Analytics: Professional SHAP Value Computation and Analysis"
 version: 0.1.0
 date-released: 2025-10-31
-url: "https://github.com/yourusername/shap-analytics"
-repository-code: "https://github.com/yourusername/shap-analytics"
+url: "https://github.com/diogoribeiro7/shap-analytics"
+repository-code: "https://github.com/diogoribeiro7/shap-analytics"
 license: MIT
 authors:
-  - family-names: "Analytics"
-    given-names: "SHAP"
-    email: shap-analytics@example.com
-    orcid: "https://orcid.org/0000-0000-0000-0000"
-    affiliation: "SHAP Analytics Contributors"
+  - family-names: "Ribeiro"
+    given-names: "Diogo"
+    email: dfr@esmad.ipp.pt
+    orcid: https://orcid.org/0009-0001-2022-7072
+    affiliation: "ESMAD, Instituto Politécnico do Porto"
 keywords:
   - SHAP
   - machine learning

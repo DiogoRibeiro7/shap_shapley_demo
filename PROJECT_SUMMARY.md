@@ -260,7 +260,7 @@ shap_analytics/
 ### Setup
 ```bash
 # Clone and setup
-git clone https://github.com/yourusername/shap-analytics.git
+git clone https://github.com/diogoribeiro7/shap-analytics.git
 cd shap-analytics
 ./setup.sh
 ```
@@ -401,9 +401,9 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ## Contact & Support
 
-- **Documentation**: https://yourusername.github.io/shap-analytics
-- **Issues**: https://github.com/yourusername/shap-analytics/issues
-- **Discussions**: https://github.com/yourusername/shap-analytics/discussions
+- **Documentation**: https://diogoribeiro7.github.io/shap-analytics
+- **Issues**: https://github.com/diogoribeiro7/shap-analytics/issues
+- **Discussions**: https://github.com/diogoribeiro7/shap-analytics/discussions
 
 ---
 
