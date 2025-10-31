@@ -2,16 +2,10 @@ name: Create issues from TODOs (Python)
 
 on:
   workflow_dispatch:
-    inputs:
-      importAll:
-        description: Import ALL TODOs from the checked-out ref (use with care)
-        type: boolean
-        required: false
-        default: false
+  schedule:
+    - cron: "17 6 * * 1"  # Mondays 06:17 UTC
   push:
-    # Use your default branch; avoids self-referencing on merges.
-    branches: [ develop ]
-    # Only scan Python-related sources.
+    branches: [ main ]
     paths:
       - '**/*.py'
       - '**/*.pyi'
@@ -23,14 +17,22 @@ on:
       - 'setup.py'
       - '!**/*.md'
       - '!.github/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - '**/*.py'
+      - '**/*.ipynb'
+      - 'pyproject.toml'
+      - 'setup.cfg'
+      - 'setup.py'
 
 permissions:
   contents: read
   issues: write
-  repository-projects: read
+  pull-requests: read
 
 concurrency:
-  group: todo-issue-${{ github.ref }}
+  group: todo-issue-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -38,35 +40,71 @@ jobs:
     name: Convert TODOs to issues
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    if: ${{ !github.event.repository.fork }}  # don't run on forks
+    if: >
+      !github.event.repository.fork &&
+      github.actor != 'dependabot[bot]' &&
+      github.actor != 'github-actions[bot]'
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
+      # PR/Dry-run: list TODOs but don't open issues
+      - name: Dry-run list of TODO-like comments (PR only)
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          set -euo pipefail
+          # Grep TODO-like tokens excluding noisy dirs
+          grep -RInE --line-number --binary-files=without-match \
+            --exclude-dir={.git,.github,.venv,venv,env,__pycache__,.pytest_cache,.mypy_cache,.ruff_cache,.nox,.tox,build,dist,site,htmlcov,coverage,node_modules,docs/_build} \
+            -E '(^|\s)(TODO|FIXME|BUG|HACK|NOTE)\b' \
+            . | tee todo_matches.txt || true
+          echo "### TODO scan (dry-run)" >> $GITHUB_STEP_SUMMARY
+          if [ -s todo_matches.txt ]; then
+            echo "$(wc -l < todo_matches.txt) matches found." >> $GITHUB_STEP_SUMMARY
+            echo "\n\`\`\`\n$(head -n 50 todo_matches.txt)\n\`\`\`\n" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No matches." >> $GITHUB_STEP_SUMMARY
+          fi
+      - name: Upload TODO scan artifact (PR only)
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: todo-scan
+          path: todo_matches.txt
+          if-no-files-found: ignore
+
+      # Push/Schedule: actually open/update issues
       - name: Run Issue Bot
-        uses: juulsn/todo-issue@v1.1.5
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: juulsn/todo-issue@v1.1.4
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          # Ignore common Python build artifacts, caches, and virtual envs.
           excludePattern: >-
             ^(
-              (\.git/|\.github/)|      # VCS/CI
-              (\.venv/|venv/|env/)|    # virtual envs
-              (__pycache__/)|          # py caches
-              (\.pytest_cache/)|       # pytest cache
-              (\.mypy_cache/)|         # mypy cache
-              (\.ruff_cache/)|         # ruff cache
-              (\.nox/|\.tox/)|         # nox/tox
+              (\.git/|\.github/)|            # VCS/CI
+              (\.venv/|venv/|env/)|          # venvs
+              (__pycache__/)|                # py caches
+              (\.pytest_cache/)|             # pytest cache
+              (\.mypy_cache/)|               # mypy cache
+              (\.ruff_cache/)|               # ruff cache
+              (\.nox/|\.tox/)|               # nox/tox
               (build/|dist/|site/|htmlcov/|coverage/)|  # builds & reports
-              (\.eggs/|\.idea/|\.vscode/)|  # tooling
-              (node_modules/)          # just in case
+              (\.eggs/|\.idea/|\.vscode/)|   # tooling
+              (node_modules/)|               # just in case
+              (docs/_build/)                 # sphinx build
             )
-          # Catch common tags engineers use in Python code & notebooks.
           keywords: "TODO,FIXME,BUG,HACK,NOTE"
-          label: "todo"
+          label: "todo,tech-debt"
           autoAssign: false
           caseSensitive: false
+          titlePrefix: "[TODO] "  # helps dedupe and triage
+
+      - name: Summary
+        if: ${{ success() && github.event_name != 'pull_request' }}
+        run: |
+          echo "### TODO issue creation" >> $GITHUB_STEP_SUMMARY
+          echo "Scan completed. See Issues for newly created/updated items." >> $GITHUB_STEP_SUMMARY
