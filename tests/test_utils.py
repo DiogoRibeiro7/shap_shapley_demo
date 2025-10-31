@@ -10,7 +10,6 @@ from typing import Any
 import numpy as np
 import pandas as pd
 import pytest
-
 from shap_analytics.utils.common import (
     compute_jensen_shannon_divergence,
     compute_mean_abs_shap,

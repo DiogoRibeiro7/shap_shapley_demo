@@ -43,9 +43,9 @@ import click
 import matplotlib.pyplot as plt
 import mlflow
 import numpy as np
-from numpy.typing import NDArray
 import pandas as pd
 import yaml
+from numpy.typing import NDArray
 
 from .utils.common import (
     ensure_directory,
