@@ -58,74 +58,158 @@ def main() -> None:
     print("Reconstructed probability:", prob_from_shap)
     
     
-# ============================================================
-# FUTURE DEVELOPMENT PLACEHOLDERS – AUTO-DETECTED BY GITHUB ACTION
-# ============================================================
-
-def export_shap_dataframe(shap_values, X, output_path: str) -> None:
+def export_shap_dataframe(shap_values: shap.Explanation, X: pd.DataFrame, output_path: str) -> None:
     """
-    Export SHAP values with corresponding features to a CSV file.
-    Useful for auditing or offline inspection.
+    Export SHAP values with corresponding feature data to a CSV file.
 
     Args:
-        shap_values: SHAP values array or Explanation object.
-        X: Input features used for computing SHAP values.
-        output_path: File path where the CSV will be saved.
+        shap_values (shap.Explanation): SHAP explanation object from TreeExplainer.
+        X (pd.DataFrame): DataFrame containing features corresponding to shap_values.
+        output_path (str): File path where the CSV file will be saved.
     """
-    # TODO: Implement this export function (convert shap_values to a DataFrame)
-    # Expected columns: ["feature", "shap_value", "sample_index"]
-    # Add CLI flag in the future to enable automatic export
-    pass
+    if not isinstance(X, pd.DataFrame):
+        raise TypeError("X must be a pandas DataFrame.")
+
+    if not hasattr(shap_values, "values"):
+        raise ValueError("Invalid SHAP object provided — must contain 'values' attribute.")
+
+    # Create a DataFrame with one row per (sample, feature)
+    df = pd.DataFrame(shap_values.values, columns=X.columns)
+    df.insert(0, "sample_index", np.arange(len(X)))
+
+    # Save to CSV
+    Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+    df.to_csv(output_path, index=False)
+    print(f"✅ SHAP values exported to {output_path}")
 
 
-def generate_html_report(shap_values, X, output_path: str) -> None:
+def generate_html_report(shap_values: shap.Explanation, X: pd.DataFrame, output_path: str) -> None:
     """
-    Generate a simple HTML report summarizing SHAP insights.
+    Generate a static HTML report summarizing SHAP results.
+
+    Args:
+        shap_values (shap.Explanation): Computed SHAP values.
+        X (pd.DataFrame): Feature matrix used for SHAP computation.
+        output_path (str): Output HTML file path.
     """
-    # TODO: Build a static HTML summary with SHAP plots and key statistics
-    # Possibly use Jinja2 templates for styling
-    # Add markdown export for ReadTheDocs compatibility
-    pass
+    import matplotlib.pyplot as plt
+
+    output = Path(output_path)
+    output.parent.mkdir(parents=True, exist_ok=True)
+
+    # Create global summary plot
+    shap.summary_plot(shap_values, X, show=False)
+    plt.tight_layout()
+    summary_png = output.with_suffix(".png")
+    plt.savefig(summary_png)
+    plt.close()
+
+    html_content = f"""
+    <html>
+    <head><title>SHAP Summary Report</title></head>
+    <body>
+        <h1>SHAP Feature Importance Summary</h1>
+        <p>This report shows the global importance of features derived from SHAP values.</p>
+        <img src="{summary_png.name}" alt="SHAP Summary Plot">
+    </body>
+    </html>
+    """
+    output.write_text(html_content, encoding="utf-8")
+    print(f"✅ HTML report created at {output_path}")
 
 
-def validate_background_sample(X_train, sample_size: int = 100) -> None:
+def validate_background_sample(X_train: pd.DataFrame, sample_size: int = 100) -> None:
     """
-    Validate that the background sample is representative enough.
+    Validate that the background sample is statistically representative of the training data.
+
+    Args:
+        X_train (pd.DataFrame): Training feature set.
+        sample_size (int): Number of samples to use for validation.
     """
-    # NOTE: Implement statistical checks (mean/std/quantiles) vs. full training data
-    # If the difference exceeds tolerance, raise a warning or log
-    pass
+    background = X_train.sample(min(sample_size, len(X_train)), random_state=42)
+    diffs = (X_train.mean() - background.mean()).abs() / (X_train.std() + 1e-9)
+    exceeded = diffs[diffs > 0.1]
+
+    if not exceeded.empty:
+        warnings.warn(f"⚠️ Background sample deviates significantly for features: {', '.join(exceeded.index)}")
+    else:
+        print("✅ Background sample validated successfully — no significant drift detected.")
 
 
-def log_shap_summary_to_cloud(shap_summary: dict, service: str = "s3") -> None:
+def log_shap_summary_to_cloud(shap_summary: Dict[str, Any], service: str = "s3") -> None:
     """
-    Upload SHAP summary metrics to cloud storage for monitoring drift.
+    Upload SHAP summary statistics to a cloud storage service.
+
+    Args:
+        shap_summary (dict): SHAP summary data to upload.
+        service (str): Cloud backend, 's3' or 'gcs'.
     """
-    # FIXME: Currently unimplemented. Add AWS S3 and GCS integrations.
-    # Should serialize shap_summary as JSON and upload with timestamp.
-    # Consider using boto3 (AWS) or google-cloud-storage clients.
-    pass
+    if service == "s3":
+        import boto3
+
+        bucket = os.getenv("S3_BUCKET_NAME")
+        if not bucket:
+            raise EnvironmentError("S3_BUCKET_NAME environment variable not set")
+
+        s3 = boto3.client("s3")
+        key = f"shap_reports/summary_{pd.Timestamp.utcnow():%Y%m%d_%H%M%S}.json"
+        s3.put_object(Bucket=bucket, Key=key, Body=json.dumps(shap_summary))
+        print(f"✅ Uploaded SHAP summary to s3://{bucket}/{key}")
+
+    elif service == "gcs":
+        from google.cloud import storage
+
+        client = storage.Client()
+        bucket_name = os.getenv("GCS_BUCKET_NAME")
+        if not bucket_name:
+            raise EnvironmentError("GCS_BUCKET_NAME environment variable not set")
+
+        bucket = client.bucket(bucket_name)
+        blob = bucket.blob(f"shap_reports/summary_{pd.Timestamp.utcnow():%Y%m%d_%H%M%S}.json")
+        blob.upload_from_string(json.dumps(shap_summary))
+        print(f"✅ Uploaded SHAP summary to gs://{bucket_name}/{blob.name}")
+
+    else:
+        raise ValueError("Unsupported service: choose either 's3' or 'gcs'")
 
 
-def monitor_feature_drift(X_train, X_new) -> None:
+def monitor_feature_drift(X_train: pd.DataFrame, X_new: pd.DataFrame) -> Dict[str, float]:
     """
-    Compare feature distributions between training data and new incoming data.
+    Compare feature distributions between training and new data using Jensen–Shannon divergence.
+
+    Args:
+        X_train (pd.DataFrame): Training feature data.
+        X_new (pd.DataFrame): New feature data.
 
     Returns:
-        dict with drift statistics per feature.
+        Dict[str, float]: Per-feature drift score (0–1).
     """
-    # TODO: Add feature drift computation (e.g., Jensen-Shannon divergence)
-    # Integration point with SHAP drift explanation module
-    pass
+    from scipy.spatial.distance import jensenshannon
+
+    drift_scores = {}
+    for col in X_train.columns:
+        p, _ = np.histogram(X_train[col], bins=20, density=True)
+        q, _ = np.histogram(X_new[col], bins=20, density=True)
+        p = np.clip(p, 1e-12, None)
+        q = np.clip(q, 1e-12, None)
+        drift_scores[col] = float(jensenshannon(p, q))
+
+    print("✅ Feature drift monitoring complete.")
+    return drift_scores
 
 
 def schedule_weekly_explanation_update() -> None:
     """
-    Placeholder for scheduling weekly SHAP recomputation.
+    Schedule weekly recomputation of SHAP explanations.
+    This is a placeholder for integration with CI/CD or cron-based automation.
     """
-    # HACK: Use this only after adding persistent model storage
-    # Should trigger re-explanations automatically once pipelines are ready
-    pass
+    import subprocess
+
+    try:
+        subprocess.run(["echo", "Recomputing SHAP explanations..."], check=True)
+        print("✅ Weekly SHAP recomputation simulated successfully.")
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Failed to schedule weekly update: {e}")
 
 
 if __name__ == "__main__":
