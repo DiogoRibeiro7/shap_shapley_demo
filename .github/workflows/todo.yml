@@ -2,10 +2,16 @@ name: Create issues from TODOs (Python)
 
 on:
   workflow_dispatch:
+    inputs:
+      importAll:
+        description: Import ALL TODOs from the checked-out ref (use with care)
+        type: boolean
+        required: false
+        default: false
   schedule:
-    - cron: "17 6 * * 1"  # Mondays 06:17 UTC
+    - cron: "17 6 * * 1"  # Mondays 06:17 UTC — dry-run only
   push:
-    branches: [ main ]
+    branches: [ develop ]
     paths:
       - '**/*.py'
       - '**/*.pyi'
@@ -36,27 +42,23 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  todos:
-    name: Convert TODOs to issues
+  # Dry-run scanning for PRs and schedule (no issues created)
+  scan-dry-run:
+    name: TODO scan (dry-run)
     runs-on: ubuntu-latest
-    timeout-minutes: 10
     if: >
-      !github.event.repository.fork &&
+      (github.event_name == 'pull_request' || github.event_name == 'schedule') &&
       github.actor != 'dependabot[bot]' &&
       github.actor != 'github-actions[bot]'
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
-      # PR/Dry-run: list TODOs but don't open issues
-      - name: Dry-run list of TODO-like comments (PR only)
-        if: ${{ github.event_name == 'pull_request' }}
+      - name: Grep TODO-like tokens
         run: |
           set -euo pipefail
-          # Grep TODO-like tokens excluding noisy dirs
           grep -RInE --line-number --binary-files=without-match \
             --exclude-dir={.git,.github,.venv,venv,env,__pycache__,.pytest_cache,.mypy_cache,.ruff_cache,.nox,.tox,build,dist,site,htmlcov,coverage,node_modules,docs/_build} \
             -E '(^|\s)(TODO|FIXME|BUG|HACK|NOTE)\b' \
@@ -68,17 +70,35 @@ jobs:
           else
             echo "No matches." >> $GITHUB_STEP_SUMMARY
           fi
-      - name: Upload TODO scan artifact (PR only)
-        if: ${{ github.event_name == 'pull_request' }}
+
+      - name: Upload scan artifact
         uses: actions/upload-artifact@v4
         with:
           name: todo-scan
           path: todo_matches.txt
           if-no-files-found: ignore
 
-      # Push/Schedule: actually open/update issues
+  # Actual issue creation — ONLY on push or manual with importAll=true
+  todos:
+    name: Convert TODOs to issues
+    runs-on: ubuntu-latest
+    needs: []
+    timeout-minutes: 10
+    if: >
+      !github.event.repository.fork &&
+      github.actor != 'dependabot[bot]' &&
+      github.actor != 'github-actions[bot]' &&
+      (
+        github.event_name == 'push' ||
+        (github.event_name == 'workflow_dispatch' && inputs.importAll == true)
+      )
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
       - name: Run Issue Bot
-        if: ${{ github.event_name != 'pull_request' }}
         uses: juulsn/todo-issue@v1.1.4
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -98,13 +118,14 @@ jobs:
               (docs/_build/)                 # sphinx build
             )
           keywords: "TODO,FIXME,BUG,HACK,NOTE"
-          label: "todo,tech-debt"
+          bodyKeywords: "ASSIGNEE:|LABELS:|PRIORITY:"
+          label: "todo"
           autoAssign: false
           caseSensitive: false
-          titlePrefix: "[TODO] "  # helps dedupe and triage
+          titleSimilarity: 0.7     # dedupe sensitivity (0..1)
+          reopenClosed: false
 
       - name: Summary
-        if: ${{ success() && github.event_name != 'pull_request' }}
         run: |
           echo "### TODO issue creation" >> $GITHUB_STEP_SUMMARY
           echo "Scan completed. See Issues for newly created/updated items." >> $GITHUB_STEP_SUMMARY
