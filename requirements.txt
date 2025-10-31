@@ -1,0 +1,7 @@
+# Python >= 3.10
+numpy>=1.24
+pandas>=1.5
+matplotlib>=3.6
+scikit-learn>=1.2
+xgboost>=1.7
+shap>=0.44
