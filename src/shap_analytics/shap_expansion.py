@@ -13,6 +13,7 @@ This module extends SHAP functionality with:
 """
 
 import asyncio
+
 from pathlib import Path
 from typing import Any, cast
 
@@ -20,6 +21,7 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 import shap
+
 from scipy.stats import kendalltau
 
 from .utils.common import (

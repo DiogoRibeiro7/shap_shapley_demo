@@ -9,11 +9,13 @@ Python >= 3.10
 """
 
 import warnings
+
 from typing import Any
 
 import numpy as np
 import pandas as pd
 import shap
+
 from scipy.special import expit
 from sklearn.datasets import load_breast_cancer
 from sklearn.ensemble import RandomForestClassifier
