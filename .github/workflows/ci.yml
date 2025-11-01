@@ -47,9 +47,6 @@ jobs:
       - name: Run Ruff formatter check
         run: poetry run ruff format --check src/ tests/
 
-      - name: Run Ruff linter (auto-fix)
-        run: poetry run ruff check --select I --fix src/ tests/
-
   typecheck:
     name: Type Check
     runs-on: ubuntu-latest
