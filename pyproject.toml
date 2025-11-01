@@ -1,4 +1,4 @@
-﻿[tool.poetry]
+[tool.poetry]
 name = "shap-analytics"
 version = "0.1.0"
 description = "Professional SHAP value computation, analysis, and deployment toolkit"
@@ -81,7 +81,7 @@ build-backend = "poetry.core.masonry.api"
 target-version = "py310"
 line-length = 100
 indent-width = 4
-# Ô£à Tell Ruff where your source tree starts so it can classify first-party imports
+# Tell Ruff where your source tree starts so it can classify first-party imports
 src = ["src"]
 
 [tool.ruff.lint]
@@ -105,7 +105,7 @@ ignore = [
     "B905",   # zip without strict parameter
 ]
 
-# Ô£à Mark your package as first-party for isort grouping
+# Mark your package as first-party for isort grouping
 [tool.ruff.lint.isort]
 known-first-party = ["shap_analytics"]
 lines-between-types = 1
