@@ -1,4 +1,4 @@
-# SHAP Analytics
+﻿# SHAP Analytics
 
 **Professional SHAP value computation, analysis, and deployment toolkit**
 
@@ -44,20 +44,20 @@ SHAP Analytics is a comprehensive Python library for computing, analyzing, visua
 
 ### Module Overview
 
-#### 🔬 shap_explain.py - Core SHAP Computation
+#### ­ƒö¼ shap_explain.py - Core SHAP Computation
 - `compute_shap_values()` - TreeExplainer with background sampling
 - `validate_background_sample()` - Statistical validation
 - `monitor_feature_drift()` - Distribution shift detection
 - `verify_shap_reconstruction()` - Probability reconstruction check
 
-#### 📊 shap_expansion.py - Extensions & Deployment
+#### ­ƒôè shap_expansion.py - Extensions & Deployment
 - Interactive Plotly dashboards
 - Model registry with versioning
 - Drift detection and alerting
 - FastAPI scaffolding
 - CI/CD integration helpers
 
-#### 🚀 shap_future.py - Experimental Features
+#### ­ƒÜÇ shap_future.py - Experimental Features
 - Adaptive model retraining
 - SHAP caching with TTL
 - Performance benchmarking
@@ -170,46 +170,46 @@ poetry run mkdocs serve
 
 ```
 shap_analytics/
-├── src/shap_analytics/
-│   ├── __init__.py
-│   ├── shap_explain.py          # Core SHAP computation
-│   ├── shap_expansion.py        # Visualization & extensions
-│   ├── shap_future.py           # Experimental features
-│   ├── shap_backlog.py          # Implementation roadmap
-│   └── utils/
-│       ├── __init__.py
-│       ├── common.py            # Shared utilities
-│       ├── io_utils.py          # I/O operations
-│       └── logging_utils.py     # Structured logging
-├── tests/
-│   ├── conftest.py              # Pytest fixtures
-│   ├── test_shap_explain.py     # Core tests
-│   ├── test_shap_expansion.py   # Extension tests
-│   ├── test_shap_future.py      # Experimental tests
-│   └── test_utils.py            # Utility tests
-├── docs/
-│   ├── index.md
-│   ├── usage.md
-│   ├── architecture.md
-│   ├── api_reference.md
-│   └── future_work.md
-├── .github/workflows/
-│   ├── ci.yml                   # CI/CD pipeline
-│   ├── todo.yml                 # TODO to GitHub Issues
-│   └── docs.yml                 # Documentation deployment
-├── pyproject.toml               # Poetry configuration
-├── Dockerfile                   # Multi-stage Docker build
-├── compose.yaml                 # Docker Compose configuration
-├── mkdocs.yml                   # Documentation configuration
-├── setup.sh                     # Setup script
-├── .pre-commit-config.yaml      # Pre-commit hooks
-├── .mypy.ini                    # MyPy configuration
-├── README.md
-├── LICENSE
-├── CONTRIBUTING.md
-├── CODE_OF_CONDUCT.md
-├── CHANGELOG.md
-└── CITATION.cff
+Ôö£ÔöÇÔöÇ src/shap_analytics/
+Ôöé   Ôö£ÔöÇÔöÇ __init__.py
+Ôöé   Ôö£ÔöÇÔöÇ shap_explain.py          # Core SHAP computation
+Ôöé   Ôö£ÔöÇÔöÇ shap_expansion.py        # Visualization & extensions
+Ôöé   Ôö£ÔöÇÔöÇ shap_future.py           # Experimental features
+Ôöé   Ôö£ÔöÇÔöÇ shap_backlog.py          # Implementation roadmap
+Ôöé   ÔööÔöÇÔöÇ utils/
+Ôöé       Ôö£ÔöÇÔöÇ __init__.py
+Ôöé       Ôö£ÔöÇÔöÇ common.py            # Shared utilities
+Ôöé       Ôö£ÔöÇÔöÇ io_utils.py          # I/O operations
+Ôöé       ÔööÔöÇÔöÇ logging_utils.py     # Structured logging
+Ôö£ÔöÇÔöÇ tests/
+Ôöé   Ôö£ÔöÇÔöÇ conftest.py              # Pytest fixtures
+Ôöé   Ôö£ÔöÇÔöÇ test_shap_explain.py     # Core tests
+Ôöé   Ôö£ÔöÇÔöÇ test_shap_expansion.py   # Extension tests
+Ôöé   Ôö£ÔöÇÔöÇ test_shap_future.py      # Experimental tests
+Ôöé   ÔööÔöÇÔöÇ test_utils.py            # Utility tests
+Ôö£ÔöÇÔöÇ docs/
+Ôöé   Ôö£ÔöÇÔöÇ index.md
+Ôöé   Ôö£ÔöÇÔöÇ usage.md
+Ôöé   Ôö£ÔöÇÔöÇ architecture.md
+Ôöé   Ôö£ÔöÇÔöÇ api_reference.md
+Ôöé   ÔööÔöÇÔöÇ future_work.md
+Ôö£ÔöÇÔöÇ .github/workflows/
+Ôöé   Ôö£ÔöÇÔöÇ ci.yml                   # CI/CD pipeline
+Ôöé   Ôö£ÔöÇÔöÇ todo.yml                 # TODO to GitHub Issues
+Ôöé   ÔööÔöÇÔöÇ docs.yml                 # Documentation deployment
+Ôö£ÔöÇÔöÇ pyproject.toml               # Poetry configuration
+Ôö£ÔöÇÔöÇ Dockerfile                   # Multi-stage Docker build
+Ôö£ÔöÇÔöÇ compose.yaml                 # Docker Compose configuration
+Ôö£ÔöÇÔöÇ mkdocs.yml                   # Documentation configuration
+Ôö£ÔöÇÔöÇ setup.sh                     # Setup script
+Ôö£ÔöÇÔöÇ .pre-commit-config.yaml      # Pre-commit hooks
+Ôö£ÔöÇÔöÇ .mypy.ini                    # MyPy configuration
+Ôö£ÔöÇÔöÇ README.md
+Ôö£ÔöÇÔöÇ LICENSE
+Ôö£ÔöÇÔöÇ CONTRIBUTING.md
+Ôö£ÔöÇÔöÇ CODE_OF_CONDUCT.md
+Ôö£ÔöÇÔöÇ CHANGELOG.md
+ÔööÔöÇÔöÇ CITATION.cff
 ```
 
 ## Development
@@ -217,34 +217,35 @@ shap_analytics/
 ### Setup Development Environment
 
 ```bash
-# Recommended one-liner
-make setup
+# Clone repository
+git clone https://github.com/diogoribeiro7/shap-analytics.git
+cd shap-analytics
 
-# Or run onboarding helper
-poetry run python scripts/onboard.py
+# Run setup script
+./setup.sh
 
-# Manual steps
+# Or manually:
 poetry install
 pre-commit install
-pre-commit install --hook-type commit-msg
 ```
-
-- Dev Containers: open the repository in VS Code and select **Reopen in Container** to use the provided `.devcontainer` setup.
-- Local IDEs: recommended settings for VS Code are stored under `.vscode/` and will enable Black+Ruff formatting by default.
 
 ### Quality Checks
 
 ```bash
-# Fast lint + typecheck
-make lint typecheck
-# Run tests with coverage gate
-make coverage
-# Security audit
-make security
-# Full pre-commit suite
+# Type checking
+poetry run mypy --strict src/
+
+# Linting
+poetry run ruff check src/
+
+# Code formatting
+poetry run ruff format src/
+
+# Run all pre-commit hooks
 poetry run pre-commit run --all-files
 ```
 
+### Running the Application
 
 ```bash
 # Activate virtual environment

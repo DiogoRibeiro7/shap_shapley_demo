@@ -1,4 +1,4 @@
-# Byte-compiled / optimized / DLL files
+﻿# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
@@ -210,9 +210,3 @@ secure/
 # Backup files
 *.bak
 *.backup
-
-# Allow editor recommendations
-!.vscode/
-!.vscode/settings.json
-!.vscode/extensions.json
-
